@@ -8,7 +8,7 @@ These standards keep the admin, public registration, and scanner wireframes feel
 - Use `Operations` only as the admin-side context label.
 - Use `External Sync` or `Integration Review` in navigation, headings, and screen titles.
 - Keep destination-specific names, such as `MinistryPlatform`, inside implementation docs, setup fields, connector settings, or technical notes.
-- Avoid `MP Sync` in primary labels unless space is truly constrained and the destination has already been established.
+- Avoid destination-specific abbreviations in primary labels unless space is truly constrained and the destination has already been established.
 
 ## Experience Labels
 
@@ -41,3 +41,10 @@ Use the shared CSS custom properties in `styles.css`.
 - Scanner/check-in should be tablet and phone first, with a large scan area and oversized event-day actions.
 - Keep section headings consistent: eyebrow for workflow area, heading for screen name.
 - Keep controls named by the action they perform, not by implementation detail.
+
+## Current Wireframe Pages
+
+- `index.html`: wireframe home and experience map.
+- `admin.html`: staff/admin console.
+- `public-registration.html`: attendee-facing signup flow.
+- `scanner.html`: event-day check-in flow.

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Public Registration Wireframe</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="public-page">
+    <header class="public-hero">
+      <nav class="public-nav" aria-label="Wireframe navigation">
+        <a href="index.html">Wireframes</a>
+        <a href="admin.html">Admin Console</a>
+        <a href="scanner.html">Check-In Scanner</a>
+      </nav>
+      <div class="public-hero-content">
+        <p class="eyebrow">Public Registration</p>
+        <h1>Spring Volunteer Rally</h1>
+        <p>April 18, 2027 at 6:30 PM | Main Campus Auditorium</p>
+      </div>
+    </header>
+
+    <main class="public-shell">
+      <section class="public-summary">
+        <div>
+          <p class="eyebrow">Event Details</p>
+          <h2>Register your group</h2>
+          <p>Sign up each attendee, choose meals and shirt sizes, and confirm required volunteer consent before submitting.</p>
+        </div>
+        <div class="summary-stack">
+          <span><strong>184</strong> registered</span>
+          <span><strong>36</strong> spots left</span>
+          <span><strong>Free</strong> event</span>
+        </div>
+      </section>
+
+      <form class="panel public-form">
+        <div class="form-step">
+          <span>1</span>
+          <div>
+            <h3>Primary Contact</h3>
+            <div class="field-grid">
+              <label>First name<input placeholder="Jordan"></label>
+              <label>Last name<input placeholder="Lee"></label>
+              <label>Email<input placeholder="jordan@example.com"></label>
+              <label>Phone<input placeholder="(555) 012-3456"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-step">
+          <span>2</span>
+          <div>
+            <div class="panel-heading">
+              <h3>Attendees</h3>
+              <button type="button" class="secondary-button">Add Attendee</button>
+            </div>
+            <div class="attendee-block">
+              <strong>Attendee 1</strong>
+              <div class="field-grid">
+                <label>Name<input placeholder="Jordan Lee"></label>
+                <label>Age group<select><option>Adult</option><option>Student</option><option>Child</option></select></label>
+                <label>Meal<select><option>Chicken</option><option>Vegetarian</option><option>No meal</option></select></label>
+                <label>Shirt size<select><option>Adult M</option><option>Adult L</option><option>Youth M</option></select></label>
+              </div>
+            </div>
+            <div class="attendee-block">
+              <strong>Attendee 2</strong>
+              <div class="field-grid">
+                <label>Name<input placeholder="Avery Lee"></label>
+                <label>Age group<select><option>Child</option><option>Student</option><option>Adult</option></select></label>
+                <label>Meal<select><option>Vegetarian</option><option>Chicken</option><option>No meal</option></select></label>
+                <label>Childcare<select><option>Needed</option><option>Not needed</option></select></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-step">
+          <span>3</span>
+          <div>
+            <h3>Consent</h3>
+            <div class="consent-row">
+              <input id="waiver" type="checkbox" checked>
+              <label for="waiver">I confirm that the information above is accurate and agree to the event waiver.</label>
+            </div>
+            <div class="button-row">
+              <button type="button" class="secondary-button">Save Draft</button>
+              <button type="button" class="primary-button">Complete Registration</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <section class="confirmation-preview">
+        <div class="panel">
+          <p class="eyebrow">Next Screen</p>
+          <h2>Confirmation</h2>
+          <p>Show registration details, QR access, resend option, and event-specific next steps.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

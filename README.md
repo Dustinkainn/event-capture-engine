@@ -21,5 +21,8 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 
 ## Wireframe
 
-- [Clickable wireframe](wireframes/index.html)
+- [Wireframe home](wireframes/index.html)
+- [Admin console wireframe](wireframes/admin.html)
+- [Public registration wireframe](wireframes/public-registration.html)
+- [Check-in scanner wireframe](wireframes/scanner.html)
 - [Wireframe standards](wireframes/standards.md)

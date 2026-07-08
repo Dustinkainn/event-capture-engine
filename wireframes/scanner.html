@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Check-In Scanner Wireframe</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="scanner-page">
+    <header class="scanner-topbar">
+      <div>
+        <p class="eyebrow">Event Day Check-In</p>
+        <h1>Spring Volunteer Rally</h1>
+      </div>
+      <nav class="scanner-nav" aria-label="Wireframe navigation">
+        <a href="index.html">Wireframes</a>
+        <a href="admin.html">Admin Console</a>
+        <a href="public-registration.html">Public Registration</a>
+      </nav>
+    </header>
+
+    <main class="scanner-shell">
+      <section class="scanner-stage">
+        <div class="scanner-frame large-scanner">
+          <div class="scan-box">
+            <span>QR scan area</span>
+          </div>
+        </div>
+        <div class="scanner-actions">
+          <button type="button" class="primary-button huge-button">Start Scanner</button>
+          <button type="button" class="secondary-button huge-button">Manual Lookup</button>
+        </div>
+      </section>
+
+      <aside class="scanner-panel">
+        <section class="panel">
+          <div class="panel-heading">
+            <h2>Latest Scan</h2>
+            <span class="badge">Ready</span>
+          </div>
+          <div class="scan-result success-result">
+            <strong>Lee Family</strong>
+            <span>4 attendees linked to this registration</span>
+            <span>Token unused</span>
+          </div>
+          <div class="scan-actions-grid">
+            <button type="button" class="primary-button">Check In Group</button>
+            <button type="button" class="secondary-button">Choose Individuals</button>
+            <button type="button" class="secondary-button">Undo Last Check-In</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Manual Lookup</h2>
+          <label class="lookup-field">Search attendee or group<input placeholder="Name, email, phone, or QR code"></label>
+          <div class="lookup-list">
+            <button type="button" class="lookup-row">
+              <strong>Jordan Lee</strong>
+              <span>Lee Family | Not checked in</span>
+            </button>
+            <button type="button" class="lookup-row warning-line">
+              <strong>Maria Santos</strong>
+              <span>Already checked in at 6:04 PM</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Event Totals</h2>
+          <div class="event-day-metrics">
+            <span><strong>184</strong> registered</span>
+            <span><strong>67</strong> checked in</span>
+            <span><strong>1</strong> duplicate scan</span>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </body>
+</html>

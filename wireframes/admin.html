@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Event Capture Engine Admin Wireframe</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <span class="brand-mark">EC</span>
+        <div>
+          <strong>Event Capture Engine</strong>
+          <span>Operations</span>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#event-builder">Event Builder</a>
+        <a href="#form-builder">Form Builder</a>
+        <a href="#counts">Counts</a>
+        <a href="#reconciliation">Reconciliation</a>
+        <a href="#sync">External Sync</a>
+      </nav>
+    </aside>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Internal event operations</p>
+          <h1>Spring Volunteer Rally</h1>
+        </div>
+        <div class="top-actions">
+          <a class="secondary-button link-button" href="index.html">Wireframes</a>
+          <a class="secondary-button link-button" href="public-registration.html">Public Registration</a>
+          <a class="secondary-button link-button" href="scanner.html">Check-In Scanner</a>
+          <button type="button" class="primary-button">New Event</button>
+        </div>
+      </header>
+
+      <section id="dashboard" class="workspace">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Dashboard</p>
+            <h2>Event Control Center</h2>
+          </div>
+          <div class="segmented">
+            <button type="button" class="selected">Upcoming</button>
+            <button type="button">Open</button>
+            <button type="button">Archived</button>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric">
+            <span>Registered</span>
+            <strong>184</strong>
+            <small>220 capacity</small>
+          </article>
+          <article class="metric">
+            <span>Checked In</span>
+            <strong>0</strong>
+            <small>Event not started</small>
+          </article>
+          <article class="metric warning">
+            <span>Payments</span>
+            <strong>12</strong>
+            <small>Need review</small>
+          </article>
+          <article class="metric danger">
+            <span>Sync</span>
+            <strong>3</strong>
+            <small>Failed queue items</small>
+          </article>
+        </div>
+
+        <div class="two-column">
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>Upcoming Events</h3>
+              <button type="button" class="text-button">Export CSV</button>
+            </div>
+            <div class="event-list">
+              <article class="event-row selected-row">
+                <div class="event-thumb"></div>
+                <div>
+                  <strong>Spring Volunteer Rally</strong>
+                  <span>Apr 18, 2027 at 6:30 PM</span>
+                </div>
+                <b>Open</b>
+              </article>
+              <article class="event-row">
+                <div class="event-thumb muted"></div>
+                <div>
+                  <strong>Family Picnic</strong>
+                  <span>May 9, 2027 at 12:00 PM</span>
+                </div>
+                <b>Draft</b>
+              </article>
+              <article class="event-row">
+                <div class="event-thumb gold"></div>
+                <div>
+                  <strong>Youth Retreat</strong>
+                  <span>Jun 3, 2027 at 4:00 PM</span>
+                </div>
+                <b>Open</b>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>Operational Alerts</h3>
+              <button type="button" class="icon-button small" aria-label="Refresh">R</button>
+            </div>
+            <div class="alert-list">
+              <div class="alert-row danger-line">
+                <strong>3 failed syncs</strong>
+                <span>Review payload snapshots before retrying.</span>
+              </div>
+              <div class="alert-row warning-line">
+                <strong>12 incomplete payments</strong>
+                <span>Exclude from complete paid counts.</span>
+              </div>
+              <div class="alert-row ok-line">
+                <strong>184 attendees counted</strong>
+                <span>Counts generated from structured answers.</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="event-builder" class="workspace">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Setup</p>
+            <h2>Event Builder</h2>
+          </div>
+          <div class="status-strip">
+            <span>Draft</span>
+            <span class="active-status">Open</span>
+            <span>Closed</span>
+            <span>Archived</span>
+          </div>
+        </div>
+
+        <div class="builder-grid">
+          <section class="panel form-panel">
+            <h3>Event Details</h3>
+            <div class="field-grid">
+              <label>Event name<input value="Spring Volunteer Rally"></label>
+              <label>Location<input value="Main Campus Auditorium"></label>
+              <label>Date<input value="04/18/2027"></label>
+              <label>Time<input value="6:30 PM"></label>
+              <label>Capacity<input value="220"></label>
+              <label>Registration closes<input value="04/16/2027"></label>
+            </div>
+            <label>Description<textarea>Equip volunteers, collect meal counts, and confirm ministry area assignments.</textarea></label>
+            <label>Internal notes<textarea>Confirm childcare room staffing before opening final reminder email.</textarea></label>
+          </section>
+
+          <section class="panel">
+            <h3>Event Page</h3>
+            <div class="image-slot">
+              <span>Event image preview</span>
+            </div>
+            <div class="toggle-list">
+              <label><input type="checkbox" checked> Public event page</label>
+              <label><input type="checkbox" checked> Free event</label>
+              <label><input type="checkbox"> Require payment before complete status</label>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="form-builder" class="workspace">
+        <div class="section-heading">
+          <div>
+          <p class="eyebrow">Form Setup</p>
+          <h2>Form Builder</h2>
+          </div>
+          <button type="button" class="primary-button">Add Question</button>
+        </div>
+
+        <div class="form-builder-layout">
+          <section class="panel question-list">
+            <h3>Questions</h3>
+            <button type="button" class="question-card active-question">Contact email <span>Email</span></button>
+            <button type="button" class="question-card">Attendee names <span>Group field</span></button>
+            <button type="button" class="question-card">Meal selection <span>Dropdown</span></button>
+            <button type="button" class="question-card">Shirt size <span>Dropdown</span></button>
+            <button type="button" class="question-card">Childcare needed <span>Checkbox</span></button>
+            <button type="button" class="question-card">Volunteer waiver <span>Consent</span></button>
+          </section>
+
+          <section class="panel form-panel">
+            <h3>Question Settings</h3>
+            <div class="field-grid">
+              <label>Label<input value="Meal selection"></label>
+              <label>Type<input value="Dropdown"></label>
+              <label>Required<input value="Yes"></label>
+              <label>Applies to<input value="Each attendee"></label>
+            </div>
+            <div class="mapping-box">
+              <strong>Count Mapping</strong>
+              <span>Category: Meals</span>
+              <span>Items: Chicken, Vegetarian, No meal</span>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="counts" class="workspace">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Operations</p>
+            <h2>Count Summary</h2>
+          </div>
+          <button type="button" class="text-button">Download Report</button>
+        </div>
+
+        <div class="count-grid">
+          <section class="panel count-panel">
+            <h3>Meals</h3>
+            <div class="bar-row"><span>Chicken</span><b style="width: 72%"></b><em>112</em></div>
+            <div class="bar-row"><span>Vegetarian</span><b style="width: 28%"></b><em>44</em></div>
+            <div class="bar-row"><span>No meal</span><b style="width: 18%"></b><em>28</em></div>
+          </section>
+          <section class="panel count-panel">
+            <h3>Shirts</h3>
+            <div class="bar-row"><span>Adult M</span><b style="width: 55%"></b><em>62</em></div>
+            <div class="bar-row"><span>Adult L</span><b style="width: 48%"></b><em>54</em></div>
+            <div class="bar-row"><span>Youth</span><b style="width: 26%"></b><em>29</em></div>
+          </section>
+          <section class="panel count-panel">
+            <h3>Childcare</h3>
+            <div class="bar-row"><span>Needed</span><b style="width: 32%"></b><em>37</em></div>
+            <div class="bar-row"><span>Not needed</span><b style="width: 80%"></b><em>147</em></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="reconciliation" class="workspace">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Review</p>
+            <h2>Reconciliation</h2>
+          </div>
+          <button type="button" class="primary-button">Mark Reviewed</button>
+        </div>
+
+        <section class="panel table-panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Registration</th>
+                <th>Attendees</th>
+                <th>Payment</th>
+                <th>Check-In</th>
+                <th>Sync Ready</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Lee Family</td>
+                <td>4</td>
+                <td>Complete</td>
+                <td>Pending</td>
+                <td>Yes</td>
+              </tr>
+              <tr>
+                <td>Maria Santos</td>
+                <td>1</td>
+                <td>Review</td>
+                <td>Pending</td>
+                <td>No</td>
+              </tr>
+              <tr>
+                <td>North Team</td>
+                <td>12</td>
+                <td>Comped</td>
+                <td>Pending</td>
+                <td>Yes</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+
+      <section id="sync" class="workspace">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">External Sync</p>
+            <h2>Integration Review</h2>
+          </div>
+          <button type="button" class="primary-button">Retry Failed</button>
+        </div>
+
+        <div class="sync-layout">
+          <section class="panel">
+            <h3>Queue</h3>
+            <div class="sync-row ok-line"><strong>174 ready</strong><span>Validated and waiting</span></div>
+            <div class="sync-row warning-line"><strong>7 review</strong><span>Needs contact match</span></div>
+            <div class="sync-row danger-line"><strong>3 failed</strong><span>Payload snapshots retained</span></div>
+          </section>
+          <section class="panel payload-panel">
+            <h3>Payload Snapshot</h3>
+            <pre>{
+  "event": "Spring Volunteer Rally",
+  "registrationStatus": "complete",
+  "attendees": 4,
+  "syncState": "review_required"
+}</pre>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
