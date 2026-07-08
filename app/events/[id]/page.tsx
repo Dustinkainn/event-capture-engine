@@ -62,9 +62,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const activeAttendees = event.attendees.filter((attendee) => attendee.status === "active");
   const checkedIn = activeAttendees.filter((attendee) => attendee.checkInStatus === "checked_in");
   const completeRegistrations = event.registrations.filter((registration) => registration.status === "complete");
+  const pendingRegistrations = event.registrations.filter(
+    (registration) => registration.status === "submitted" || registration.status === "incomplete"
+  );
   const reviewItems = event.syncQueueItems.filter(
     (item) => item.status === "failed" || item.status === "review_required"
   );
+  const readySyncItems = event.syncQueueItems.filter((item) => item.status === "ready" || item.status === "queued");
   const refreshCounts = refreshEventCounts.bind(null, event.id);
 
   return (
@@ -75,12 +79,8 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <h1>{event.name}</h1>
         </div>
         <div className="actions">
-          <a className="primaryButton" href={`/events/${event.id}/edit`}>Edit Event</a>
-          <a className="secondaryButton" href={`/register/${event.id}`}>Public Registration</a>
-          <a className="secondaryButton" href={`/events/${event.id}/registrations`}>Registrations</a>
-          <a className="secondaryButton" href="/">Dashboard</a>
           <a className="secondaryButton" href="/events">Events</a>
-          <a className="secondaryButton" href={`/events/${event.id}/scanner`}>Check-In Scanner</a>
+          <a className="secondaryButton" href="/">Dashboard</a>
         </div>
       </header>
 
@@ -105,6 +105,53 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             <span>Checked In</span>
             <strong>{checkedIn.length}</strong>
             <small>{reviewItems.length} review items</small>
+          </article>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="hubGrid">
+          <article className="hubCard eventDayHub">
+            <div>
+              <p className="eyebrow">Event Day</p>
+              <h2>Check-In</h2>
+              <span>{checkedIn.length} of {activeAttendees.length} guests checked in</span>
+            </div>
+            <a className="primaryButton" href={`/events/${event.id}/scanner`}>Open Scanner</a>
+          </article>
+
+          <article className="hubCard">
+            <div>
+              <p className="eyebrow">Registration</p>
+              <h2>Guest Records</h2>
+              <span>{completeRegistrations.length} complete, {pendingRegistrations.length} need review</span>
+            </div>
+            <div className="hubActions">
+              <a className="secondaryButton" href={`/register/${event.id}`}>Public Page</a>
+              <a className="secondaryButton" href={`/events/${event.id}/registrations`}>Review</a>
+            </div>
+          </article>
+
+          <article className="hubCard">
+            <div>
+              <p className="eyebrow">Setup</p>
+              <h2>Build Event</h2>
+              <span>{event.questions.length} questions, {event.generatedCounts.length} count totals</span>
+            </div>
+            <div className="hubActions">
+              <a className="secondaryButton" href={`/events/${event.id}/edit`}>Details</a>
+              <a className="secondaryButton" href={`/events/${event.id}/form`}>Form</a>
+              <a className="secondaryButton" href={`/events/${event.id}/counts`}>Counts</a>
+            </div>
+          </article>
+
+          <article className="hubCard">
+            <div>
+              <p className="eyebrow">Operations</p>
+              <h2>External Sync</h2>
+              <span>{readySyncItems.length} ready, {reviewItems.length} need review</span>
+            </div>
+            <a className="secondaryButton" href={`/events/${event.id}/sync`}>Review Queue</a>
           </article>
         </div>
       </section>

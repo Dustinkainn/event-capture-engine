@@ -367,6 +367,40 @@ h2 {
   font-size: 24px !important;
 }
 
+.hubGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hubCard {
+  display: grid;
+  align-content: space-between;
+  gap: 18px;
+  min-height: 186px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.eventDayHub {
+  border-top: 4px solid var(--action);
+}
+
+.hubCard span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.hubActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .detailGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(340px, 0.8fr);
@@ -1161,6 +1195,7 @@ button:disabled {
   }
 
   .metricGrid,
+  .hubGrid,
   .twoColumn,
   .detailGrid,
   .editorLayout,
