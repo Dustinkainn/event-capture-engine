@@ -74,6 +74,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         </div>
         <div className="actions">
           <a className="primaryButton" href={`/events/${event.id}/edit`}>Edit Event</a>
+          <a className="secondaryButton" href={`/register/${event.id}`}>Public Registration</a>
           <a className="secondaryButton" href="/">Dashboard</a>
           <a className="secondaryButton" href="/events">Events</a>
           <a className="secondaryButton" href="/preview/scanner.html">Scanner Preview</a>
