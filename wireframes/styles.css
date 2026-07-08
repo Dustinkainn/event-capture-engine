@@ -895,11 +895,11 @@ th {
 
 .scanner-stage {
   display: grid;
-  gap: 14px;
+  gap: var(--space-3);
 }
 
 .large-scanner {
-  min-height: calc(100vh - 198px);
+  min-height: calc(100vh - 150px);
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -918,9 +918,13 @@ th {
   grid-column: 1 / -1;
 }
 
-.huge-button {
-  min-height: 60px;
-  font-size: 18px;
+.compact-actions {
+  margin-top: var(--space-4);
+}
+
+.compact-actions .primary-button,
+.compact-actions .secondary-button {
+  min-height: 42px;
 }
 
 .scanner-panel {
