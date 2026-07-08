@@ -220,7 +220,7 @@ button {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 18px;
 }
@@ -267,6 +267,12 @@ button {
   gap: 18px;
 }
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.75fr) minmax(280px, 0.65fr);
+  gap: 18px;
+}
+
 .panel {
   padding: 18px;
 }
@@ -274,7 +280,8 @@ button {
 .event-list,
 .alert-list,
 .toggle-list,
-.question-list {
+.question-list,
+.access-list {
   display: grid;
   gap: 10px;
 }
@@ -324,7 +331,8 @@ button {
 }
 
 .alert-row,
-.sync-row {
+.sync-row,
+.access-row {
   display: grid;
   gap: 4px;
   padding: 12px;
@@ -333,7 +341,8 @@ button {
 }
 
 .alert-row span,
-.sync-row span {
+.sync-row span,
+.access-row span {
   color: var(--muted);
   font-size: 13px;
 }
@@ -518,6 +527,25 @@ textarea {
   font-weight: 700;
 }
 
+.account-chip,
+.operator-chip {
+  display: grid;
+  gap: 2px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.account-chip span,
+.operator-chip span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .scanner-frame {
   display: grid;
   place-items: center;
@@ -663,6 +691,21 @@ th {
   line-height: 1.5;
 }
 
+.access-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.access-strip span {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-left: 4px solid var(--info);
+  background: var(--field);
+}
+
 .public-hero {
   min-height: 420px;
   padding: 22px clamp(18px, 4vw, 48px);
@@ -802,6 +845,16 @@ th {
   font-size: clamp(22px, 3vw, 32px);
 }
 
+.scanner-topbar .operator-chip {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.scanner-topbar .operator-chip span {
+  color: #c7d2dd;
+}
+
 .scanner-shell {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.65fr);
@@ -906,6 +959,7 @@ th {
 
   .metric-grid,
   .two-column,
+  .dashboard-grid,
   .builder-grid,
   .checkin-grid,
   .count-grid,
@@ -913,6 +967,7 @@ th {
   .sync-layout,
   .hub-grid,
   .public-summary,
+  .access-strip,
   .scanner-shell {
     grid-template-columns: 1fr;
   }

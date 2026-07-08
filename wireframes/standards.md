@@ -1,6 +1,6 @@
-# Wireframe Standards
+# Preview Standards
 
-These standards keep the admin, public registration, and scanner wireframes feeling like one product while still allowing each experience to fit its job.
+These standards keep the admin, public registration, and scanner previews feeling like one product while still allowing each experience to fit its job.
 
 ## Product Naming
 
@@ -42,9 +42,16 @@ Use the shared CSS custom properties in `styles.css`.
 - Keep section headings consistent: eyebrow for workflow area, heading for screen name.
 - Keep controls named by the action they perform, not by implementation detail.
 
-## Current Wireframe Pages
+## Current Preview Pages
 
-- `index.html`: wireframe home and experience map.
+- `index.html`: preview home and area selector.
 - `admin.html`: staff/admin console.
 - `public-registration.html`: attendee-facing signup flow.
 - `scanner.html`: event-day check-in flow.
+
+## Access Model Placeholders
+
+- Present the system as one organization workspace where event data is captured.
+- Allow for named staff users, volunteers, and event-day devices without requiring a final login model yet.
+- Event-day activity should show placeholders for operator, device, and timestamp because check-in logs need that context.
+- Public registration should read as guest-friendly unless a future event requires account login.

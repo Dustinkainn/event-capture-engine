@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Event Capture Engine Admin Wireframe</title>
+    <title>Event Capture Engine Admin Console</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -32,7 +32,11 @@
           <h1>Spring Volunteer Rally</h1>
         </div>
         <div class="top-actions">
-          <a class="secondary-button link-button" href="index.html">Wireframes</a>
+          <div class="account-chip">
+            <strong>Calvary Events</strong>
+            <span>Admin: Taylor</span>
+          </div>
+          <a class="secondary-button link-button" href="index.html">Preview Home</a>
           <a class="secondary-button link-button" href="public-registration.html">Public Registration</a>
           <a class="secondary-button link-button" href="scanner.html">Check-In Scanner</a>
           <button type="button" class="primary-button">New Event</button>
@@ -73,9 +77,14 @@
             <strong>3</strong>
             <small>Failed queue items</small>
           </article>
+          <article class="metric">
+            <span>Active Staff</span>
+            <strong>8</strong>
+            <small>Across 3 devices</small>
+          </article>
         </div>
 
-        <div class="two-column">
+        <div class="dashboard-grid">
           <section class="panel">
             <div class="panel-heading">
               <h3>Upcoming Events</h3>
@@ -126,6 +135,26 @@
               <div class="alert-row ok-line">
                 <strong>184 attendees counted</strong>
                 <span>Counts generated from structured answers.</span>
+              </div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>Workspace Access</h3>
+              <button type="button" class="text-button">Manage</button>
+            </div>
+            <div class="access-list">
+              <div class="access-row">
+                <strong>Taylor Reed</strong>
+                <span>Admin | Full event setup</span>
+              </div>
+              <div class="access-row">
+                <strong>Jordan Miles</strong>
+                <span>Staff | Registration review</span>
+              </div>
+              <div class="access-row">
+                <strong>Front Door iPad</strong>
+                <span>Check-in device | Event day only</span>
               </div>
             </div>
           </section>
