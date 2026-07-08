@@ -19,8 +19,3 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 - [Screens](docs/screens.md)
 - [MVP spec](docs/mvp-spec.md)
 
-## Public-Safe Rules
-
-Do not commit real MinistryPlatform credentials, API URLs, tokens, private attendee data, member records, church exports, screenshots with personal information, or production secrets.
-
-This repository should begin with documentation and architecture before production code so the event, registration, count, check-in, payment, and sync workflows stay cleanly separated.
