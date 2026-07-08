@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { refreshEventCounts } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const reviewItems = event.syncQueueItems.filter(
     (item) => item.status === "failed" || item.status === "review_required"
   );
+  const refreshCounts = refreshEventCounts.bind(null, event.id);
 
   return (
     <main className="pageShell">
@@ -138,7 +140,12 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         <article className="panel">
           <div className="panelHeading">
             <h2>Count Summary</h2>
-            <a className="textButton" href={`/events/${event.id}/counts`}>Manage</a>
+            <div className="inlineActions">
+              <form action={refreshCounts}>
+                <button className="textButton" type="submit">Refresh</button>
+              </form>
+              <a className="textButton" href={`/events/${event.id}/counts`}>Manage</a>
+            </div>
           </div>
           <div className="barList">
             {event.generatedCounts.slice(0, 8).map((count) => {

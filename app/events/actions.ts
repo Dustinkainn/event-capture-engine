@@ -3,6 +3,7 @@
 import { CountSourceType, EventStatus, EventVisibility, QuestionScope, QuestionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { generateEventCounts } from "@/lib/counts";
 import { prisma } from "@/lib/prisma";
 
 function getString(formData: FormData, name: string) {
@@ -332,4 +333,14 @@ export async function deleteCountMapping(eventId: string, mappingId: string) {
   revalidatePath(`/events/${eventId}`);
   revalidatePath(`/events/${eventId}/counts`);
   redirect(`/events/${eventId}/counts`);
+}
+
+export async function refreshEventCounts(eventId: string) {
+  await generateEventCounts(prisma, eventId);
+
+  revalidatePath("/");
+  revalidatePath("/events");
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
+  redirect(`/events/${eventId}/counts?counts=refreshed`);
 }

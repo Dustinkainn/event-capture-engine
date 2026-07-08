@@ -4,6 +4,7 @@ import { randomBytes } from "crypto";
 import { AgeGroup } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { generateEventCounts } from "@/lib/counts";
 import { prisma } from "@/lib/prisma";
 
 function getString(formData: FormData, name: string) {
@@ -124,6 +125,8 @@ export async function submitRegistration(eventId: string, formData: FormData) {
 
     return createdRegistration;
   });
+
+  await generateEventCounts(prisma, eventId);
 
   revalidatePath("/");
   revalidatePath("/events");

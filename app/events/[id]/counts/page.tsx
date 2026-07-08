@@ -6,16 +6,19 @@ import {
   createCountMapping,
   deleteCountCategory,
   deleteCountMapping,
+  refreshEventCounts,
   updateCountCategory
 } from "../../actions";
 import { CountCategoryForm } from "./CountCategoryForm";
 
 type CountBuilderPageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ counts?: string }>;
 };
 
-export default async function CountBuilderPage({ params }: CountBuilderPageProps) {
+export default async function CountBuilderPage({ params, searchParams }: CountBuilderPageProps) {
   const { id } = await params;
+  const { counts } = await searchParams;
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
@@ -42,6 +45,13 @@ export default async function CountBuilderPage({ params }: CountBuilderPageProps
           }
         },
         orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }]
+      },
+      generatedCounts: {
+        include: {
+          countCategory: true,
+          countItem: true
+        },
+        orderBy: [{ countCategory: { displayOrder: "asc" } }, { countItem: { displayOrder: "asc" } }]
       }
     }
   });
@@ -52,6 +62,7 @@ export default async function CountBuilderPage({ params }: CountBuilderPageProps
 
   const addCategory = createCountCategory.bind(null, event.id);
   const addMapping = createCountMapping.bind(null, event.id);
+  const refreshCounts = refreshEventCounts.bind(null, event.id);
   const countItems = event.countCategories.flatMap((category) =>
     category.items.map((item) => ({
       id: item.id,
@@ -68,11 +79,23 @@ export default async function CountBuilderPage({ params }: CountBuilderPageProps
           <h1>{event.name}</h1>
         </div>
         <div className="actions">
+          <form action={refreshCounts}>
+            <button className="primaryButton" type="submit">Refresh Counts</button>
+          </form>
           <a className="secondaryButton" href={`/events/${event.id}`}>Event Detail</a>
           <a className="secondaryButton" href={`/events/${event.id}/form`}>Form Builder</a>
           <a className="secondaryButton" href="/events">Events</a>
         </div>
       </header>
+
+      {counts === "refreshed" ? (
+        <section className="section">
+          <article className="noticePanel ok">
+            <strong>Counts refreshed</strong>
+            <span>Totals now reflect completed registrations and mapped answers.</span>
+          </article>
+        </section>
+      ) : null}
 
       <section className="section editorLayout">
         <article className="panel">
@@ -119,6 +142,32 @@ export default async function CountBuilderPage({ params }: CountBuilderPageProps
       <section className="section detailGrid">
         <article className="panel">
           <div className="panelHeading">
+            <h2>Generated Totals</h2>
+            <span className="statusPill">{event.generatedCounts.length} totals</span>
+          </div>
+          {event.generatedCounts.length === 0 ? (
+            <div className="emptyState">
+              <strong>No generated totals yet</strong>
+              <span>Refresh counts after registrations have been submitted.</span>
+            </div>
+          ) : (
+            <div className="barList">
+              {event.generatedCounts.map((count) => {
+                const width = `${Math.min(100, Math.max(8, count.total))}%`;
+                return (
+                  <div key={count.id}>
+                    <span>{count.countCategory.name}: {count.countItem?.label ?? "Total"}</span>
+                    <b style={{ width }} />
+                    <em>{count.total}</em>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </article>
+
+        <article className="panel">
+          <div className="panelHeading">
             <h2>Answer Mapping</h2>
             <span className="statusPill">{event.questions.reduce((total, question) => total + question.countMappings.length, 0)} mapped</span>
           </div>
@@ -146,7 +195,9 @@ export default async function CountBuilderPage({ params }: CountBuilderPageProps
             ))}
           </div>
         </article>
+      </section>
 
+      <section className="section detailGrid">
         <article className="panel">
           <h2>Add Mapping</h2>
           <form action={addMapping} className="editorForm compactForm">
