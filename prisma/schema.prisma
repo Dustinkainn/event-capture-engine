@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum EventStatus {
+  draft
+  open
+  closed
+  archived
+}
+
+enum EventVisibility {
+  public
+  private
+}
+
+enum RegistrationStatus {
+  draft
+  submitted
+  complete
+  incomplete
+  canceled
+}
+
+enum AttendeeStatus {
+  active
+  canceled
+  waitlisted
+}
+
+enum AgeGroup {
+  adult
+  student
+  child
+  unknown
+}
+
+enum PaymentStatus {
+  not_required
+  pending
+  complete
+  failed
+  refunded
+  comped
+}
+
+enum CheckInStatus {
+  not_checked_in
+  checked_in
+  undone
+}
+
+enum StaffRole {
+  admin
+  staff
+  volunteer
+  device
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum QuestionType {
+  text
+  email
+  phone
+  dropdown
+  multiple_choice
+  checkbox
+  date
+  long_answer
+  waiver
+}
+
+enum QuestionScope {
+  registration
+  attendee
+}
+
+enum CountSourceType {
+  attendee
+  answer
+  payment
+  check_in
+  custom
+}
+
+enum CountSourceFilter {
+  registered
+  complete
+  paid
+  checked_in
+}
+
+enum TokenScope {
+  registration
+  attendee
+}
+
+enum TokenStatus {
+  unused
+  used
+  void
+}
+
+enum CheckInAction {
+  check_in
+  undo
+}
+
+enum SyncStatus {
+  not_ready
+  ready
+  queued
+  synced
+  failed
+  review_required
+}
+
+enum SyncRecordType {
+  registration
+  attendee
+  check_in
+  count
+}
+
+model Event {
+  id                     String                 @id @default(cuid())
+  name                   String
+  startsAt               DateTime
+  endsAt                 DateTime?
+  locationName           String?
+  description            String?
+  capacity               Int?
+  registrationOpensAt    DateTime?
+  registrationClosesAt   DateTime?
+  imageUrl               String?
+  isPaid                 Boolean                @default(false)
+  visibility             EventVisibility        @default(public)
+  status                 EventStatus            @default(draft)
+  internalNotes          String?
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  devices                EventDevice[]
+  registrations          Registration[]
+  attendees              Attendee[]
+  questions              RegistrationQuestion[]
+  countCategories        CountCategory[]
+  generatedCounts        GeneratedCount[]
+  qrTokens               QrToken[]
+  checkIns               CheckIn[]
+  syncQueueItems         SyncQueueItem[]
+}
+
+model StaffUser {
+  id             String        @id @default(cuid())
+  displayName    String
+  email          String?
+  role           StaffRole
+  status         UserStatus    @default(active)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  activeDevices  EventDevice[]
+  checkIns       CheckIn[]
+}
+
+model EventDevice {
+  id                String     @id @default(cuid())
+  eventId           String
+  name              String
+  deviceType        String?
+  activeStaffUserId String?
+  lastSeenAt        DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  event             Event      @relation(fields: [eventId], references: [id])
+  activeStaffUser   StaffUser? @relation(fields: [activeStaffUserId], references: [id])
+  checkIns          CheckIn[]
+}
+
+model Registration {
+  id               String             @id @default(cuid())
+  eventId          String
+  primaryFirstName String
+  primaryLastName  String
+  primaryEmail     String?
+  primaryPhone     String?
+  status           RegistrationStatus @default(draft)
+  paymentStatus    PaymentStatus      @default(not_required)
+  submittedAt      DateTime?
+  completedAt      DateTime?
+  canceledAt       DateTime?
+  reviewNotes      String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  event            Event              @relation(fields: [eventId], references: [id])
+  attendees        Attendee[]
+  answers          RegistrationAnswer[]
+  qrTokens         QrToken[]
+  checkIns         CheckIn[]
+}
+
+model Attendee {
+  id              String               @id @default(cuid())
+  eventId         String
+  registrationId  String
+  firstName       String
+  lastName        String?
+  email           String?
+  phone           String?
+  ageGroup        AgeGroup?
+  status          AttendeeStatus       @default(active)
+  checkInStatus   CheckInStatus        @default(not_checked_in)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  event           Event                @relation(fields: [eventId], references: [id])
+  registration    Registration         @relation(fields: [registrationId], references: [id])
+  answers         RegistrationAnswer[]
+  qrTokens        QrToken[]
+  checkIns        CheckIn[]
+}
+
+model RegistrationQuestion {
+  id            String                   @id @default(cuid())
+  eventId       String
+  label         String
+  helpText      String?
+  questionType  QuestionType
+  scope         QuestionScope
+  isRequired    Boolean                  @default(false)
+  displayOrder  Int                      @default(0)
+  conditionJson String?
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  event         Event                    @relation(fields: [eventId], references: [id])
+  options       QuestionOption[]
+  answers       RegistrationAnswer[]
+  countMappings QuestionCountMapping[]
+}
+
+model QuestionOption {
+  id            String                 @id @default(cuid())
+  questionId    String
+  label         String
+  value         String
+  displayOrder  Int                    @default(0)
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  question      RegistrationQuestion   @relation(fields: [questionId], references: [id])
+  answers       RegistrationAnswer[]
+  countMappings QuestionCountMapping[]
+}
+
+model RegistrationAnswer {
+  id             String               @id @default(cuid())
+  registrationId String
+  attendeeId     String?
+  questionId     String
+  optionId       String?
+  valueText      String?
+  valueBoolean   Boolean?
+  valueDate      DateTime?
+  valueJson      String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  registration   Registration         @relation(fields: [registrationId], references: [id])
+  attendee       Attendee?            @relation(fields: [attendeeId], references: [id])
+  question       RegistrationQuestion @relation(fields: [questionId], references: [id])
+  option         QuestionOption?      @relation(fields: [optionId], references: [id])
+}
+
+model CountCategory {
+  id              String           @id @default(cuid())
+  eventId         String
+  name            String
+  sourceType      CountSourceType
+  displayOrder    Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  event           Event            @relation(fields: [eventId], references: [id])
+  items           CountItem[]
+  generatedCounts GeneratedCount[]
+}
+
+model CountItem {
+  id              String                 @id @default(cuid())
+  countCategoryId String
+  label           String
+  value           String
+  displayOrder    Int                    @default(0)
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  countCategory   CountCategory          @relation(fields: [countCategoryId], references: [id])
+  countMappings   QuestionCountMapping[]
+  generatedCounts GeneratedCount[]
+}
+
+model QuestionCountMapping {
+  id              String               @id @default(cuid())
+  questionId      String
+  optionId        String?
+  countItemId     String
+  quantity        Int                  @default(1)
+  appliesWhenJson String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  question        RegistrationQuestion @relation(fields: [questionId], references: [id])
+  option          QuestionOption?      @relation(fields: [optionId], references: [id])
+  countItem       CountItem            @relation(fields: [countItemId], references: [id])
+}
+
+model GeneratedCount {
+  id              String            @id @default(cuid())
+  eventId         String
+  countCategoryId String
+  countItemId     String?
+  total           Int
+  sourceFilter    CountSourceFilter
+  generatedAt     DateTime
+  createdAt       DateTime          @default(now())
+  event           Event             @relation(fields: [eventId], references: [id])
+  countCategory   CountCategory     @relation(fields: [countCategoryId], references: [id])
+  countItem       CountItem?        @relation(fields: [countItemId], references: [id])
+}
+
+model QrToken {
+  id             String        @id @default(cuid())
+  eventId        String
+  registrationId String
+  attendeeId     String?
+  tokenHash      String        @unique
+  scope          TokenScope
+  status         TokenStatus   @default(unused)
+  createdAt      DateTime      @default(now())
+  usedAt         DateTime?
+  event          Event         @relation(fields: [eventId], references: [id])
+  registration   Registration  @relation(fields: [registrationId], references: [id])
+  attendee       Attendee?     @relation(fields: [attendeeId], references: [id])
+  checkIns       CheckIn[]
+}
+
+model CheckIn {
+  id             String        @id @default(cuid())
+  eventId        String
+  registrationId String
+  attendeeId     String?
+  qrTokenId      String?
+  action         CheckInAction
+  checkedInAt    DateTime
+  staffUserId    String?
+  deviceId       String?
+  notes          String?
+  createdAt      DateTime      @default(now())
+  event          Event         @relation(fields: [eventId], references: [id])
+  registration   Registration  @relation(fields: [registrationId], references: [id])
+  attendee       Attendee?     @relation(fields: [attendeeId], references: [id])
+  qrToken        QrToken?      @relation(fields: [qrTokenId], references: [id])
+  staffUser      StaffUser?    @relation(fields: [staffUserId], references: [id])
+  device         EventDevice?  @relation(fields: [deviceId], references: [id])
+}
+
+model SyncQueueItem {
+  id                   String         @id @default(cuid())
+  eventId              String
+  recordType           SyncRecordType
+  recordId             String
+  status               SyncStatus
+  destination          String?
+  payloadSnapshotJson  String?
+  responseSnapshotJson String?
+  errorMessage         String?
+  attempts             Int            @default(0)
+  nextRetryAt          DateTime?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  event                Event          @relation(fields: [eventId], references: [id])
+}

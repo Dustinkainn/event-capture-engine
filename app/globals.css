@@ -1,0 +1,360 @@
+:root {
+  --ink: #1f2933;
+  --muted: #607080;
+  --line: #d8dee6;
+  --surface: #ffffff;
+  --band: #f4f7f6;
+  --nav: #18212b;
+  --action: #31785f;
+  --info: #2f6f9f;
+  --warning: #a66f20;
+  --danger: #a54848;
+  --field: #f8faf9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--band);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 22px 16px;
+  color: #ffffff;
+  background: var(--nav);
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.brandMark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  background: #263747;
+  font-weight: 700;
+}
+
+.brand span,
+.brand strong {
+  display: block;
+}
+
+.brand div span {
+  margin-top: 3px;
+  color: #b7c3cf;
+  font-size: 13px;
+}
+
+.nav {
+  display: grid;
+  gap: 6px;
+}
+
+.nav a {
+  padding: 11px 12px;
+  border-radius: 6px;
+  color: #dce5ed;
+  text-decoration: none;
+}
+
+.nav a:hover,
+.nav .active {
+  color: #ffffff;
+  background: var(--info);
+}
+
+.content {
+  min-width: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  min-height: 88px;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2 {
+  margin-bottom: 0;
+}
+
+.actions,
+.panelHeading,
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.primaryButton,
+.secondaryButton,
+.textButton {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton {
+  color: #ffffff;
+  background: var(--action);
+}
+
+.secondaryButton {
+  display: inline-grid;
+  place-items: center;
+  color: var(--ink);
+  background: #e6ece9;
+  text-decoration: none;
+}
+
+.textButton {
+  color: var(--info);
+  background: transparent;
+}
+
+.section {
+  padding: 30px 32px 0;
+}
+
+.section:last-child {
+  padding-bottom: 40px;
+}
+
+.sectionHeading {
+  margin-bottom: 18px;
+}
+
+.statusPill {
+  display: inline-grid;
+  place-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: #ffffff;
+  background: var(--action);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.metric,
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.metric {
+  display: grid;
+  gap: 5px;
+  min-height: 116px;
+  padding: 18px;
+  border-top: 4px solid var(--info);
+}
+
+.metric span,
+.metric small,
+.eventRow span,
+.accessRow span,
+.syncRows span {
+  color: var(--muted);
+}
+
+.metric strong {
+  font-size: 34px;
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+  gap: 18px;
+}
+
+.panel {
+  padding: 18px;
+}
+
+.panelHeading {
+  margin-bottom: 16px;
+}
+
+.eventList,
+.accessList,
+.syncRows {
+  display: grid;
+  gap: 10px;
+}
+
+.eventRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px 110px auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 68px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--field);
+}
+
+.eventRow span,
+.accessRow span,
+.syncRows span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.eventRow em {
+  color: var(--action);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.accessRow,
+.syncRows div {
+  padding: 12px;
+  border-left: 4px solid var(--info);
+  background: var(--field);
+}
+
+.syncRows .ok {
+  border-left-color: var(--action);
+}
+
+.syncRows .warn {
+  border-left-color: var(--warning);
+}
+
+.syncRows .danger {
+  border-left-color: var(--danger);
+}
+
+.barList {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.barList div {
+  display: grid;
+  grid-template-columns: 150px minmax(120px, 1fr) 42px;
+  gap: 12px;
+  align-items: center;
+}
+
+.barList b {
+  display: block;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--info);
+}
+
+.barList em {
+  color: var(--muted);
+  font-style: normal;
+  text-align: right;
+}
+
+@media (max-width: 980px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+  }
+
+  .nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topbar,
+  .actions,
+  .sectionHeading,
+  .panelHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .metricGrid,
+  .twoColumn {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .topbar,
+  .section {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .eventRow,
+  .barList div {
+    grid-template-columns: 1fr;
+  }
+}

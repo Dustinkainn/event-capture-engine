@@ -27,3 +27,24 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 - [Public registration preview](wireframes/public-registration.html)
 - [Check-in scanner preview](wireframes/scanner.html)
 - [Preview standards](wireframes/standards.md)
+
+## Local App
+
+Run the MVP app scaffold:
+
+```txt
+npm install
+npm run dev
+```
+
+Then open:
+
+```txt
+http://localhost:3000
+```
+
+The static previews are also served by the app at:
+
+```txt
+http://localhost:3000/wireframes/index.html
+```
