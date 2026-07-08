@@ -1,0 +1,42 @@
+# Wireframe Standards
+
+These standards keep the admin, public registration, and scanner wireframes feeling like one product while still allowing each experience to fit its job.
+
+## Product Naming
+
+- Use `Event Capture Engine` for the product name.
+- Use `Operations` only as the admin-side context label.
+- Use `MinistryPlatform Sync` on first mention in navigation, headings, and screen titles.
+- Avoid `MP Sync` in primary labels unless space is truly constrained.
+
+## Experience Labels
+
+- `Admin Dashboard`: staff control center.
+- `Event Builder`: event setup and publishing controls.
+- `Form Builder`: registration questions and count mappings.
+- `Public Registration`: attendee-facing registration flow.
+- `Check-In`: staff or volunteer event-day scanning and lookup.
+- `Count Summary`: operational counts generated from structured data.
+- `Reconciliation`: staff review before reporting or sync.
+- `MinistryPlatform Sync`: queue, matching, payload snapshots, retries, and logs.
+
+## Theme Tokens
+
+Use the shared CSS custom properties in `styles.css`.
+
+- `--action`: primary action and success states.
+- `--info`: active navigation, selected segments, and neutral progress.
+- `--warning`: payment review or attention states.
+- `--danger`: failed syncs and blocking errors.
+- `--surface`: panels and cards.
+- `--band`: page background.
+- `--line`: borders and separators.
+- `--muted`: supporting text.
+
+## Layout Rules
+
+- Admin pages may use the left sidebar on desktop.
+- Public registration should not use the admin sidebar.
+- Scanner/check-in should be tablet and phone first, with a large scan area and oversized event-day actions.
+- Keep section headings consistent: eyebrow for workflow area, heading for screen name.
+- Keep controls named by the action they perform, not by implementation detail.
