@@ -13,6 +13,7 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 - [Project goal](docs/project-goal.md)
 - [Build roadmap](docs/build-roadmap.md)
 - [Data model](docs/data-model.md)
+- [MVP schema](docs/mvp-schema.md)
 - [Count engine](docs/count-engine.md)
 - [MinistryPlatform sync](docs/ministryplatform-sync.md)
 - [False-negative risks](docs/false-negative-risks.md)

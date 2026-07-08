@@ -16,6 +16,10 @@ The MVP should prove the system can capture clean event data, generate exact cou
 - Attendee search
 - CSV export
 
+## Schema Target
+
+The initial implementation should follow the [MVP schema](mvp-schema.md). That schema is the source of truth for Phase 1 entity boundaries, statuses, count mappings, QR/check-in placeholders, and external sync placeholders.
+
 ## Event Builder Requirements
 
 - Create, edit, and archive events.

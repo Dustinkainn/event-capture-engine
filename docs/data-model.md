@@ -6,6 +6,8 @@ Example: one parent registering four people should create one registration or or
 
 ## Core Records
 
+For implementation-ready Phase 1 fields, statuses, relationships, and validation rules, see [MVP schema](mvp-schema.md).
+
 ### Events
 
 Represents an internal event configured by staff.
