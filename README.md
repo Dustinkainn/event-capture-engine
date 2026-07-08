@@ -46,5 +46,5 @@ http://localhost:3000
 The static previews are also served by the app at:
 
 ```txt
-http://localhost:3000/wireframes/index.html
+http://localhost:3000/preview/index.html
 ```

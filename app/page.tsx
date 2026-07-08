@@ -68,7 +68,7 @@ export default function Home() {
             <h1>Core Capture</h1>
           </div>
           <div className="actions">
-            <a className="secondaryButton" href="/wireframes/index.html">Preview Home</a>
+            <a className="secondaryButton" href="/preview/index.html">Preview Home</a>
             <button className="primaryButton" type="button">New Event</button>
           </div>
         </header>
