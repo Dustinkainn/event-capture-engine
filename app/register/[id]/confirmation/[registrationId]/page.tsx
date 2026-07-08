@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import QRCode from "qrcode";
 import { formatEventDateTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -21,6 +22,9 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
     notFound();
   }
 
+  const token = registration.qrTokens[0];
+  const qrImage = token ? await QRCode.toDataURL(token.tokenHash, { margin: 1, width: 280 }) : null;
+
   return (
     <main className="publicShell">
       <section className="publicHero compactHero">
@@ -35,7 +39,13 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
         <article className="publicCard confirmationCard">
           <span className="statusPill">Confirmed</span>
           <h2>{registration.primaryFirstName}, your registration is saved.</h2>
-          <p>Your event record is ready for check-in. A confirmation message and QR access can be connected here in the next pass.</p>
+          <p>Your event record is ready for check-in. Show this QR code at the event entrance.</p>
+          {qrImage ? (
+            <div className="qrCard">
+              <img alt="Registration QR code" src={qrImage} />
+              <span>Check-in QR code</span>
+            </div>
+          ) : null}
           <div className="detailList">
             <div><dt>Registration</dt><dd>{registration.primaryFirstName} {registration.primaryLastName}</dd></div>
             <div><dt>Attendees</dt><dd>{registration.attendees.map((attendee) => `${attendee.firstName} ${attendee.lastName ?? ""}`).join(", ")}</dd></div>

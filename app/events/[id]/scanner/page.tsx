@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { checkInAttendee, undoLatestCheckIn } from "./actions";
+import { checkInAttendee, checkInToken, undoLatestCheckIn } from "./actions";
+import { QrCameraScanner } from "./QrCameraScanner";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,11 @@ const resultMessages: Record<string, { title: string; detail: string; tone: stri
     title: "Needs review",
     detail: "This registration is not ready for check-in yet.",
     tone: "warn"
+  },
+  "wrong-event": {
+    title: "Wrong event",
+    detail: "This QR code belongs to a different event.",
+    tone: "danger"
   },
   "not-found": {
     title: "No matching attendee",
@@ -83,6 +89,7 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
   const lookupResults = event.attendees.slice(0, 4);
   const resultMessage = result ? resultMessages[result] : null;
   const undoCheckIn = undoLatestCheckIn.bind(null, event.id);
+  const scanToken = checkInToken.bind(null, event.id);
 
   return (
     <main className="scannerShell">
@@ -101,8 +108,15 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
       <section className="scannerLayout">
         <article className="scanStage">
           <div className="scanFrame">
-            <span>QR scan area</span>
+            <QrCameraScanner action={scanToken} eventId={event.id} />
           </div>
+          <form action={scanToken} className="tokenEntry">
+            <label htmlFor="token">QR token</label>
+            <div>
+              <input id="token" name="token" placeholder="Paste or type QR token" />
+              <button className="primaryButton" type="submit">Check Token</button>
+            </div>
+          </form>
         </article>
 
         <aside className="scannerSide">

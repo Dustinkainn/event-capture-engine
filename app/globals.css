@@ -760,6 +760,28 @@ th {
   padding: 26px;
 }
 
+.qrCard {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  width: fit-content;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+.qrCard img {
+  width: 220px;
+  height: 220px;
+}
+
+.qrCard span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .scannerShell {
   min-height: 100vh;
   color: #ffffff;
@@ -811,6 +833,58 @@ th {
     linear-gradient(0deg, transparent 49%, rgba(255, 255, 255, 0.16) 50%, transparent 51%);
   color: #ffffff;
   font-weight: 700;
+  overflow: hidden;
+}
+
+.cameraScanner {
+  display: grid;
+  gap: 12px;
+  place-items: center;
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+}
+
+.cameraReader {
+  width: min(100%, 300px);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.cameraControls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.cameraScanner span {
+  color: #dce5ed;
+  font-size: 13px;
+}
+
+.tokenEntry {
+  display: grid;
+  gap: 8px;
+  width: min(520px, 100%);
+  margin-top: 14px;
+  color: #ffffff;
+}
+
+.tokenEntry div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.tokenEntry input {
+  min-height: 40px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  font: inherit;
 }
 
 .scannerSide {
@@ -1018,6 +1092,8 @@ button:disabled {
   }
 
   .scannerActions,
+  .cameraControls,
+  .tokenEntry div,
   .compactScannerPanel .scannerTotals {
     grid-template-columns: 1fr;
   }
