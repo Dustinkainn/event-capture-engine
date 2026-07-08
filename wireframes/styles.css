@@ -927,6 +927,10 @@ th {
   min-height: 42px;
 }
 
+.scanner-actions-mobile {
+  display: none;
+}
+
 .scanner-panel {
   display: grid;
   align-content: start;
@@ -1087,5 +1091,13 @@ th {
   .scanner-actions,
   .scan-actions-grid {
     grid-template-columns: 1fr;
+  }
+
+  .scanner-actions-mobile {
+    display: grid;
+  }
+
+  .scanner-actions-panel {
+    display: none;
   }
 }
