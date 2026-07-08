@@ -1,6 +1,6 @@
 "use server";
 
-import { EventStatus, EventVisibility, QuestionScope, QuestionType } from "@prisma/client";
+import { CountSourceType, EventStatus, EventVisibility, QuestionScope, QuestionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -188,4 +188,148 @@ export async function deleteQuestion(eventId: string, questionId: string) {
   revalidatePath(`/events/${eventId}`);
   revalidatePath(`/events/${eventId}/form`);
   redirect(`/events/${eventId}/form`);
+}
+
+function getCountItems(formData: FormData) {
+  return getString(formData, "items")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((label, index) => ({
+      label,
+      value: label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""),
+      displayOrder: index + 1
+    }));
+}
+
+function getCountCategoryPayload(eventId: string, formData: FormData) {
+  const name = getString(formData, "name");
+
+  if (!name) {
+    throw new Error("Count category name is required.");
+  }
+
+  return {
+    eventId,
+    name,
+    sourceType: getString(formData, "sourceType") as CountSourceType,
+    displayOrder: getOptionalNumber(formData, "displayOrder") ?? 0
+  };
+}
+
+export async function createCountCategory(eventId: string, formData: FormData) {
+  const items = getCountItems(formData);
+
+  await prisma.countCategory.create({
+    data: {
+      ...getCountCategoryPayload(eventId, formData),
+      items: items.length > 0 ? { create: items } : undefined
+    }
+  });
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
+  redirect(`/events/${eventId}/counts`);
+}
+
+export async function updateCountCategory(eventId: string, categoryId: string, formData: FormData) {
+  const items = getCountItems(formData);
+  const currentItems = await prisma.countItem.findMany({
+    where: { countCategoryId: categoryId },
+    orderBy: { displayOrder: "asc" }
+  });
+  const currentLabels = currentItems.map((item) => item.label);
+  const nextLabels = items.map((item) => item.label);
+  const itemsChanged =
+    currentLabels.length !== nextLabels.length ||
+    currentLabels.some((label, index) => label !== nextLabels[index]);
+
+  if (!itemsChanged) {
+    await prisma.countCategory.update({
+      where: { id: categoryId },
+      data: getCountCategoryPayload(eventId, formData)
+    });
+
+    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/events/${eventId}/counts`);
+    redirect(`/events/${eventId}/counts`);
+  }
+
+  await prisma.$transaction([
+    prisma.questionCountMapping.deleteMany({
+      where: { countItem: { countCategoryId: categoryId } }
+    }),
+    prisma.generatedCount.deleteMany({
+      where: { countCategoryId: categoryId }
+    }),
+    prisma.countItem.deleteMany({
+      where: { countCategoryId: categoryId }
+    }),
+    prisma.countCategory.update({
+      where: { id: categoryId },
+      data: {
+        ...getCountCategoryPayload(eventId, formData),
+        items: items.length > 0 ? { create: items } : undefined
+      }
+    })
+  ]);
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
+  redirect(`/events/${eventId}/counts`);
+}
+
+export async function deleteCountCategory(eventId: string, categoryId: string) {
+  await prisma.$transaction([
+    prisma.questionCountMapping.deleteMany({
+      where: { countItem: { countCategoryId: categoryId } }
+    }),
+    prisma.generatedCount.deleteMany({
+      where: { countCategoryId: categoryId }
+    }),
+    prisma.countItem.deleteMany({
+      where: { countCategoryId: categoryId }
+    }),
+    prisma.countCategory.delete({
+      where: { id: categoryId }
+    })
+  ]);
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
+  redirect(`/events/${eventId}/counts`);
+}
+
+export async function createCountMapping(eventId: string, formData: FormData) {
+  const questionId = getString(formData, "questionId");
+  const optionId = getString(formData, "optionId");
+  const countItemId = getString(formData, "countItemId");
+  const quantity = getOptionalNumber(formData, "quantity") ?? 1;
+
+  if (!questionId || !countItemId) {
+    throw new Error("Question and count item are required.");
+  }
+
+  await prisma.questionCountMapping.create({
+    data: {
+      questionId,
+      optionId: optionId || null,
+      countItemId,
+      quantity
+    }
+  });
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
+  redirect(`/events/${eventId}/counts`);
+}
+
+export async function deleteCountMapping(eventId: string, mappingId: string) {
+  await prisma.questionCountMapping.delete({
+    where: { id: mappingId }
+  });
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
+  redirect(`/events/${eventId}/counts`);
 }

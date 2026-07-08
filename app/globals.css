@@ -476,6 +476,38 @@ h2 {
   background: var(--field);
 }
 
+.mappingGroup {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--info);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+.mappingGroup > span,
+.mappingGroup > small {
+  color: var(--muted);
+}
+
+.mappingRow {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(180px, 1fr) 48px auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.mappingRow span,
+.mappingRow em {
+  color: var(--muted);
+  font-style: normal;
+}
+
 .tableWrap {
   margin-top: 18px;
   overflow-x: auto;
@@ -620,6 +652,7 @@ th {
   .eventRow,
   .barList div,
   .detailList div,
+  .mappingRow,
   .formSection {
     grid-template-columns: 1fr;
   }

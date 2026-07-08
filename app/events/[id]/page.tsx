@@ -135,7 +135,10 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
       <section className="section detailGrid">
         <article className="panel">
-          <h2>Count Summary</h2>
+          <div className="panelHeading">
+            <h2>Count Summary</h2>
+            <a className="textButton" href={`/events/${event.id}/counts`}>Manage</a>
+          </div>
           <div className="barList">
             {event.generatedCounts.slice(0, 8).map((count) => {
               const width = `${Math.min(100, Math.max(8, count.total))}%`;
