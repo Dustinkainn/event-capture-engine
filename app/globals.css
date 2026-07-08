@@ -152,12 +152,15 @@ h2 {
 .primaryButton,
 .secondaryButton,
 .textButton {
+  display: inline-grid;
+  place-items: center;
   min-height: 38px;
   padding: 0 14px;
   border: 0;
   border-radius: 6px;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .primaryButton {
@@ -166,11 +169,8 @@ h2 {
 }
 
 .secondaryButton {
-  display: inline-grid;
-  place-items: center;
   color: var(--ink);
   background: #e6ece9;
-  text-decoration: none;
 }
 
 .textButton {
@@ -432,6 +432,82 @@ th {
   text-transform: uppercase;
 }
 
+.editorLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.42fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.editorForm {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.formSection {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.formSection.singleColumn {
+  grid-template-columns: 1fr;
+}
+
+.editorForm label,
+.checkRow span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.editorForm input,
+.editorForm select,
+.editorForm textarea {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: #ffffff;
+  font: inherit;
+}
+
+.editorForm textarea {
+  resize: vertical;
+}
+
+.checkRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--field);
+}
+
+.checkRow input {
+  width: 18px;
+  min-height: 18px;
+  margin: 0;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+}
+
+.sidePanel {
+  position: sticky;
+  top: 18px;
+}
+
 @media (max-width: 980px) {
   .shell {
     grid-template-columns: 1fr;
@@ -456,8 +532,13 @@ th {
 
   .metricGrid,
   .twoColumn,
-  .detailGrid {
+  .detailGrid,
+  .editorLayout {
     grid-template-columns: 1fr;
+  }
+
+  .sidePanel {
+    position: static;
   }
 }
 
@@ -470,7 +551,13 @@ th {
 
   .eventRow,
   .barList div,
-  .detailList div {
+  .detailList div,
+  .formSection {
     grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    align-items: stretch;
+    flex-direction: column-reverse;
   }
 }

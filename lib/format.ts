@@ -16,6 +16,15 @@ export function formatEventDateTime(date: Date) {
   }).format(date);
 }
 
+export function formatDateTimeInput(date?: Date | null) {
+  if (!date) {
+    return "";
+  }
+
+  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return offsetDate.toISOString().slice(0, 16);
+}
+
 export function formatStatus(status: string) {
   return status
     .split("_")

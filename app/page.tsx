@@ -94,7 +94,7 @@ export default async function Home() {
           </div>
           <div className="actions">
             <a className="secondaryButton" href="/preview/index.html">Preview Home</a>
-            <button className="primaryButton" type="button">New Event</button>
+            <a className="primaryButton" href="/events/new">New Event</a>
           </div>
         </header>
 
