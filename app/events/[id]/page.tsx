@@ -117,7 +117,10 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         </article>
 
         <article className="panel">
-          <h2>Registration Form</h2>
+          <div className="panelHeading">
+            <h2>Registration Form</h2>
+            <a className="textButton" href={`/events/${event.id}/form`}>Manage</a>
+          </div>
           <div className="questionList">
             {event.questions.map((question) => (
               <div className="questionRow" key={question.id}>
