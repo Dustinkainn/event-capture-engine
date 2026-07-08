@@ -6,8 +6,9 @@ These standards keep the admin, public registration, and scanner wireframes feel
 
 - Use `Event Capture Engine` for the product name.
 - Use `Operations` only as the admin-side context label.
-- Use `MinistryPlatform Sync` on first mention in navigation, headings, and screen titles.
-- Avoid `MP Sync` in primary labels unless space is truly constrained.
+- Use `External Sync` or `Integration Review` in navigation, headings, and screen titles.
+- Keep destination-specific names, such as `MinistryPlatform`, inside implementation docs, setup fields, connector settings, or technical notes.
+- Avoid `MP Sync` in primary labels unless space is truly constrained and the destination has already been established.
 
 ## Experience Labels
 
@@ -18,7 +19,7 @@ These standards keep the admin, public registration, and scanner wireframes feel
 - `Check-In`: staff or volunteer event-day scanning and lookup.
 - `Count Summary`: operational counts generated from structured data.
 - `Reconciliation`: staff review before reporting or sync.
-- `MinistryPlatform Sync`: queue, matching, payload snapshots, retries, and logs.
+- `External Sync`: queue, matching, payload snapshots, retries, and logs for the configured destination.
 
 ## Theme Tokens
 
