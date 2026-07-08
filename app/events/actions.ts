@@ -1,6 +1,14 @@
 "use server";
 
-import { CountSourceType, EventStatus, EventVisibility, QuestionScope, QuestionType } from "@prisma/client";
+import {
+  CountSourceType,
+  EventStatus,
+  EventVisibility,
+  QuestionScope,
+  QuestionType,
+  RegistrationStatus,
+  SyncStatus
+} from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateEventCounts } from "@/lib/counts";
@@ -343,4 +351,41 @@ export async function refreshEventCounts(eventId: string) {
   revalidatePath(`/events/${eventId}`);
   revalidatePath(`/events/${eventId}/counts`);
   redirect(`/events/${eventId}/counts?counts=refreshed`);
+}
+
+export async function updateRegistrationStatus(eventId: string, registrationId: string, status: RegistrationStatus) {
+  const now = new Date();
+
+  await prisma.registration.update({
+    where: { id: registrationId },
+    data: {
+      status,
+      completedAt: status === "complete" ? now : null,
+      canceledAt: status === "canceled" ? now : null
+    }
+  });
+
+  await generateEventCounts(prisma, eventId);
+
+  revalidatePath("/");
+  revalidatePath("/events");
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/registrations`);
+  redirect(`/events/${eventId}/registrations?updated=1`);
+}
+
+export async function updateSyncStatus(eventId: string, syncItemId: string, status: SyncStatus) {
+  await prisma.syncQueueItem.update({
+    where: { id: syncItemId },
+    data: {
+      status,
+      attempts: status === "ready" ? 0 : undefined,
+      nextRetryAt: null
+    }
+  });
+
+  revalidatePath("/");
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/sync`);
+  redirect(`/events/${eventId}/sync?updated=1`);
 }

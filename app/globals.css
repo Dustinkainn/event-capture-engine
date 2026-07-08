@@ -502,6 +502,95 @@ h2 {
   border-left: 4px solid var(--action);
 }
 
+.noticePanel.warn {
+  border-left: 4px solid var(--warning);
+}
+
+.registrationReviewList {
+  display: grid;
+  gap: 12px;
+}
+
+.reviewItem {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+  overflow: hidden;
+}
+
+.reviewItem summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.reviewItem summary::-webkit-details-marker {
+  display: none;
+}
+
+.reviewItem summary small,
+.reviewItem summary em,
+.reviewMeta span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.reviewItem summary em {
+  flex: 0 0 auto;
+  color: var(--action);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.reviewBody {
+  display: grid;
+  gap: 16px;
+  padding: 14px;
+  border-top: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.reviewMeta,
+.reviewColumns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reviewMeta div {
+  padding: 12px;
+  border-left: 4px solid var(--info);
+  background: var(--field);
+}
+
+.reviewColumns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reviewColumns h3 {
+  margin: 0 0 10px;
+}
+
+.syncSnapshot {
+  display: grid;
+  gap: 8px;
+}
+
+.syncSnapshot pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: 14px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--nav);
+}
+
 .mappingGroup {
   display: grid;
   gap: 8px;
@@ -1076,6 +1165,8 @@ button:disabled {
   .detailGrid,
   .editorLayout,
   .introCard,
+  .reviewMeta,
+  .reviewColumns,
   .scannerLayout {
     grid-template-columns: 1fr;
   }

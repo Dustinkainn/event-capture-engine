@@ -77,6 +77,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         <div className="actions">
           <a className="primaryButton" href={`/events/${event.id}/edit`}>Edit Event</a>
           <a className="secondaryButton" href={`/register/${event.id}`}>Public Registration</a>
+          <a className="secondaryButton" href={`/events/${event.id}/registrations`}>Registrations</a>
           <a className="secondaryButton" href="/">Dashboard</a>
           <a className="secondaryButton" href="/events">Events</a>
           <a className="secondaryButton" href={`/events/${event.id}/scanner`}>Check-In Scanner</a>
@@ -202,7 +203,10 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         </article>
 
         <article className="panel">
-          <h2>External Sync</h2>
+          <div className="panelHeading">
+            <h2>External Sync</h2>
+            <a className="textButton" href={`/events/${event.id}/sync`}>Review</a>
+          </div>
           <div className="syncRows">
             {event.syncQueueItems.map((item) => {
               const className =
