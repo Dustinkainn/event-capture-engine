@@ -51,7 +51,7 @@ Use the shared CSS custom properties in `styles.css`.
 
 ## Access Model Placeholders
 
-- Present the system as one organization workspace where event data is captured.
+- Present the system as one shared event area where event data is captured.
 - Allow for named staff users, volunteers, and event-day devices without requiring a final login model yet.
 - Event-day activity should show placeholders for operator, device, and timestamp because check-in logs need that context.
 - Public registration should read as guest-friendly unless a future event requires account login.
