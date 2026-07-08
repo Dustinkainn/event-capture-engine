@@ -1,21 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { formatEventDate, formatStatus } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
-
-function formatEventDate(date: Date) {
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  }).format(date);
-}
-
-function formatStatus(status: string) {
-  return status
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
 
 async function getDashboardData() {
   const [events, staffUsers, generatedCounts, syncItems] = await Promise.all([
@@ -93,7 +79,7 @@ export default async function Home() {
         </div>
         <nav className="nav" aria-label="Primary">
           <a href="#dashboard" className="active">Dashboard</a>
-          <a href="#events">Events</a>
+          <a href="/events">Events</a>
           <a href="#counts">Counts</a>
           <a href="#access">Access</a>
           <a href="#sync">External Sync</a>
@@ -146,7 +132,7 @@ export default async function Home() {
                 return (
                   <div className="eventRow" key={event.id}>
                     <div>
-                      <strong>{event.name}</strong>
+                    <a className="rowLink" href={`/events/${event.id}`}>{event.name}</a>
                       <span>{formatEventDate(event.startsAt)}</span>
                     </div>
                     <div>
