@@ -19,3 +19,6 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 - [Screens](docs/screens.md)
 - [MVP spec](docs/mvp-spec.md)
 
+## Wireframe
+
+- [Clickable wireframe](wireframes/index.html)
