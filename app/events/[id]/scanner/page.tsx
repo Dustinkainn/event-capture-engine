@@ -1,15 +1,46 @@
 import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { checkInAttendee, undoLatestCheckIn } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 type ScannerPageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ result?: string }>;
 };
 
-export default async function ScannerPage({ params }: ScannerPageProps) {
+const resultMessages: Record<string, { title: string; detail: string; tone: string }> = {
+  "checked-in": {
+    title: "Check-in saved",
+    detail: "The attendee status and event totals have been updated.",
+    tone: "ok"
+  },
+  "undo-saved": {
+    title: "Check-in undone",
+    detail: "The attendee was moved back to not checked in.",
+    tone: "ok"
+  },
+  "already-checked-in": {
+    title: "Already checked in",
+    detail: "This attendee was already marked present for this event.",
+    tone: "warn"
+  },
+  "needs-review": {
+    title: "Needs review",
+    detail: "This registration is not ready for check-in yet.",
+    tone: "warn"
+  },
+  "not-found": {
+    title: "No matching attendee",
+    detail: "The selected attendee could not be found for this event.",
+    tone: "danger"
+  }
+};
+
+export default async function ScannerPage({ params, searchParams }: ScannerPageProps) {
   const { id } = await params;
+  const { result } = await searchParams;
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
@@ -50,6 +81,8 @@ export default async function ScannerPage({ params }: ScannerPageProps) {
   const activeStations = event.devices.filter((device) => device.lastSeenAt).length;
   const latestScan = event.checkIns[0];
   const lookupResults = event.attendees.slice(0, 4);
+  const resultMessage = result ? resultMessages[result] : null;
+  const undoCheckIn = undoLatestCheckIn.bind(null, event.id);
 
   return (
     <main className="scannerShell">
@@ -73,6 +106,13 @@ export default async function ScannerPage({ params }: ScannerPageProps) {
         </article>
 
         <aside className="scannerSide">
+          {resultMessage ? (
+            <article className={`scannerResult ${resultMessage.tone}`}>
+              <strong>{resultMessage.title}</strong>
+              <span>{resultMessage.detail}</span>
+            </article>
+          ) : null}
+
           <article className="scannerPanel">
             <div className="panelHeading">
               <h2>Event Totals</h2>
@@ -118,7 +158,9 @@ export default async function ScannerPage({ params }: ScannerPageProps) {
             <div className="scannerActions">
               <button className="primaryButton" type="button">Check In Group</button>
               <button className="secondaryButton" type="button">Choose Individuals</button>
-              <button className="secondaryButton" type="button">Undo Last Check-In</button>
+              <form action={undoCheckIn}>
+                <button className="secondaryButton" type="submit">Undo Last Check-In</button>
+              </form>
             </div>
           </article>
 
@@ -126,12 +168,25 @@ export default async function ScannerPage({ params }: ScannerPageProps) {
             <h2>Manual Lookup</h2>
             <input className="lookupInput" aria-label="Search attendee or group" placeholder="Name, email, phone, or QR code" />
             <div className="lookupList">
-              {lookupResults.map((attendee) => (
-                <div className="lookupRow" key={attendee.id}>
-                  <strong>{attendee.firstName} {attendee.lastName ?? ""}</strong>
-                  <span>{attendee.registration.primaryFirstName} {attendee.registration.primaryLastName} | {formatStatus(attendee.checkInStatus)}</span>
-                </div>
-              ))}
+              {lookupResults.map((attendee) => {
+                const checkIn = checkInAttendee.bind(null, event.id, attendee.id);
+                const isReady = attendee.status === "active" && attendee.registration.status === "complete";
+                const isCheckedIn = attendee.checkInStatus === "checked_in";
+
+                return (
+                  <div className="lookupRow" key={attendee.id}>
+                    <div>
+                      <strong>{attendee.firstName} {attendee.lastName ?? ""}</strong>
+                      <span>{attendee.registration.primaryFirstName} {attendee.registration.primaryLastName} | {formatStatus(attendee.checkInStatus)}</span>
+                    </div>
+                    <form action={checkIn}>
+                      <button className={isCheckedIn ? "secondaryButton" : "primaryButton"} type="submit" disabled={!isReady || isCheckedIn}>
+                        {isCheckedIn ? "Checked In" : isReady ? "Check In" : "Review"}
+                      </button>
+                    </form>
+                  </div>
+                );
+              })}
             </div>
           </article>
 
