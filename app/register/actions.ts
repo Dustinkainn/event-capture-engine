@@ -22,6 +22,15 @@ function getOptionalDate(formData: FormData, name: string) {
   return value ? new Date(value) : null;
 }
 
+function getAttendeeKeys(formData: FormData) {
+  const keys = getString(formData, "attendeeKeys")
+    .split(",")
+    .map((key) => key.trim())
+    .filter(Boolean);
+
+  return keys.length > 0 ? keys : ["0"];
+}
+
 export async function submitRegistration(eventId: string, formData: FormData) {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -39,9 +48,19 @@ export async function submitRegistration(eventId: string, formData: FormData) {
 
   const primaryFirstName = getString(formData, "primaryFirstName");
   const primaryLastName = getString(formData, "primaryLastName");
-  const attendeeFirstName = getString(formData, "attendeeFirstName");
+  const attendeeKeys = getAttendeeKeys(formData);
+  const attendeesToCreate = attendeeKeys
+    .map((key) => ({
+      key,
+      firstName: getString(formData, `attendeeFirstName-${key}`),
+      lastName: getOptionalString(formData, `attendeeLastName-${key}`),
+      email: getOptionalString(formData, `attendeeEmail-${key}`),
+      phone: getOptionalString(formData, `attendeePhone-${key}`),
+      ageGroup: (getString(formData, `ageGroup-${key}`) || "unknown") as AgeGroup
+    }))
+    .filter((attendee) => attendee.firstName);
 
-  if (!primaryFirstName || !primaryLastName || !attendeeFirstName) {
+  if (!primaryFirstName || !primaryLastName || attendeesToCreate.length === 0) {
     throw new Error("Primary contact and attendee name are required.");
   }
 
@@ -56,46 +75,76 @@ export async function submitRegistration(eventId: string, formData: FormData) {
         status: event.isPaid ? "submitted" : "complete",
         paymentStatus: event.isPaid ? "pending" : "not_required",
         submittedAt: new Date(),
-        completedAt: event.isPaid ? null : new Date(),
-        attendees: {
-          create: {
-            eventId,
-            firstName: attendeeFirstName,
-            lastName: getOptionalString(formData, "attendeeLastName"),
-            email: getOptionalString(formData, "attendeeEmail"),
-            phone: getOptionalString(formData, "attendeePhone"),
-            ageGroup: (getString(formData, "ageGroup") || "unknown") as AgeGroup
-          }
-        }
-      },
-      include: {
-        attendees: true
+        completedAt: event.isPaid ? null : new Date()
       }
     });
 
-    const attendee = createdRegistration.attendees[0];
-    const answerData = event.questions.flatMap((question) => {
-      const fieldName = question.scope === "attendee" ? `attendeeQuestion-${question.id}` : `question-${question.id}`;
+    const createdAttendees = [];
+    for (const attendee of attendeesToCreate) {
+      const createdAttendee = await tx.attendee.create({
+        data: {
+          eventId,
+          registrationId: createdRegistration.id,
+          firstName: attendee.firstName,
+          lastName: attendee.lastName,
+          email: attendee.email,
+          phone: attendee.phone,
+          ageGroup: attendee.ageGroup
+        }
+      });
+
+      createdAttendees.push({ ...createdAttendee, formKey: attendee.key });
+    }
+
+    const answerData = [];
+    for (const question of event.questions) {
+      if (question.scope === "registration") {
+        const fieldName = `question-${question.id}`;
+        const rawValue = getString(formData, fieldName);
+        const checkboxChecked = formData.get(fieldName) === "on";
+        const isBooleanType = question.questionType === "checkbox" || question.questionType === "waiver";
+
+        if (!rawValue && !checkboxChecked && !question.isRequired) {
+          continue;
+        }
+
+        const selectedOption = question.options.find((option) => option.id === rawValue);
+
+        answerData.push({
+          registrationId: createdRegistration.id,
+          attendeeId: null,
+          questionId: question.id,
+          optionId: selectedOption?.id ?? null,
+          valueText: selectedOption ? selectedOption.label : isBooleanType ? null : rawValue || null,
+          valueBoolean: isBooleanType ? checkboxChecked : null,
+          valueDate: question.questionType === "date" ? getOptionalDate(formData, fieldName) : null
+        });
+        continue;
+      }
+
+      for (const attendee of createdAttendees) {
+        const fieldName = `attendeeQuestion-${question.id}-${attendee.formKey}`;
       const rawValue = getString(formData, fieldName);
       const checkboxChecked = formData.get(fieldName) === "on";
       const isBooleanType = question.questionType === "checkbox" || question.questionType === "waiver";
 
       if (!rawValue && !checkboxChecked && !question.isRequired) {
-        return [];
+          continue;
       }
 
       const selectedOption = question.options.find((option) => option.id === rawValue);
 
-      return [{
+        answerData.push({
         registrationId: createdRegistration.id,
-        attendeeId: question.scope === "attendee" ? attendee.id : null,
+          attendeeId: attendee.id,
         questionId: question.id,
         optionId: selectedOption?.id ?? null,
         valueText: selectedOption ? selectedOption.label : isBooleanType ? null : rawValue || null,
         valueBoolean: isBooleanType ? checkboxChecked : null,
         valueDate: question.questionType === "date" ? getOptionalDate(formData, fieldName) : null
-      }];
-    });
+        });
+      }
+    }
 
     if (answerData.length > 0) {
       await tx.registrationAnswer.createMany({

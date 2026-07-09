@@ -763,10 +763,10 @@ th {
 }
 
 .publicHero {
-  min-height: 360px;
+  min-height: 380px;
   display: flex;
   align-items: flex-end;
-  padding: 48px;
+  padding: 48px 48px 112px;
   color: #ffffff;
   background:
     linear-gradient(135deg, rgba(49, 120, 95, 0.95), rgba(24, 33, 43, 0.92)),
@@ -780,6 +780,7 @@ th {
 .publicHero h1 {
   max-width: 940px;
   font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.02;
 }
 
 .publicHero p {
@@ -789,8 +790,8 @@ th {
 
 .publicContent {
   width: min(1080px, calc(100% - 36px));
-  margin: -58px auto 0;
-  padding-bottom: 48px;
+  margin: -72px auto 0;
+  padding-bottom: 56px;
 }
 
 .publicCard {
@@ -802,22 +803,25 @@ th {
 
 .introCard {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  gap: 24px;
-  padding: 24px;
+  gap: 18px;
+  align-items: start;
+  padding: 22px;
 }
 
 .introCard p {
+  max-width: 680px;
   color: var(--muted);
 }
 
 .publicStats {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .publicStats div {
-  padding: 14px;
+  min-height: 70px;
+  padding: 12px 14px;
   border-left: 4px solid var(--info);
   background: var(--field);
 }
@@ -837,21 +841,69 @@ th {
 
 .registrationForm {
   display: grid;
-  gap: 22px;
+  gap: 0;
   margin-top: 18px;
-  padding: 24px;
+  padding: 28px;
 }
 
 .formStep {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr);
-  gap: 14px;
-  padding-bottom: 22px;
+  gap: 18px;
+  padding: 0 0 28px;
   border-bottom: 1px solid var(--line);
+}
+
+.formStep + .formStep {
+  padding-top: 28px;
 }
 
 .formStep:last-of-type {
   border-bottom: 0;
+}
+
+.stepHeader,
+.attendeeEntryHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.stepHeader {
+  margin-bottom: 18px;
+}
+
+.stepHeader p {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.attendeeGroup {
+  display: grid;
+  gap: 16px;
+}
+
+.attendeeEntry {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+.attendeeEntry .formSection {
+  gap: 16px;
+}
+
+.attendeeEntry h3 {
+  font-size: 18px;
+}
+
+.attendeeQuestions {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 
 .stepBadge {
@@ -867,12 +919,12 @@ th {
 
 .publicQuestions {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .publicQuestion {
   display: grid;
-  gap: 6px;
+  gap: 7px;
 }
 
 .publicQuestion label,
@@ -1002,14 +1054,60 @@ th {
 
 .cameraControls {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   width: 100%;
 }
 
-.cameraScanner span {
+.cameraSelect {
+  display: grid;
+  gap: 6px;
+  width: 100%;
   color: #dce5ed;
   font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.cameraSelect select {
+  min-height: 40px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  font: inherit;
+}
+
+.cameraStatus {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-left: 4px solid rgba(255, 255, 255, 0.42);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dce5ed;
+  font-size: 13px;
+  text-align: left;
+}
+
+.cameraStatus strong,
+.cameraStatus span {
+  display: block;
+}
+
+.cameraStatus.ok {
+  border-left-color: #4aa37c;
+}
+
+.cameraStatus.warn {
+  border-left-color: #c2903d;
+}
+
+.cameraStatus.danger {
+  border-left-color: #b45353;
 }
 
 .tokenEntry {
@@ -1210,6 +1308,19 @@ button:disabled {
     min-height: 460px;
   }
 
+  .publicHero {
+    min-height: 340px;
+    padding-bottom: 96px;
+  }
+
+  .publicContent {
+    margin-top: -56px;
+  }
+
+  .publicStats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .sidePanel {
     position: static;
   }
@@ -1222,6 +1333,54 @@ button:disabled {
   .scannerHeader {
     padding-left: 18px;
     padding-right: 18px;
+  }
+
+  .publicHero {
+    min-height: 320px;
+    padding-bottom: 78px;
+  }
+
+  .publicHero h1 {
+    font-size: 42px;
+  }
+
+  .publicContent {
+    width: min(100% - 24px, 1080px);
+    margin-top: -42px;
+    padding-bottom: 32px;
+  }
+
+  .introCard,
+  .registrationForm {
+    padding: 18px;
+  }
+
+  .publicStats {
+    gap: 8px;
+  }
+
+  .publicStats div {
+    min-height: auto;
+    padding: 10px 12px;
+  }
+
+  .publicStats strong {
+    font-size: 21px;
+  }
+
+  .stepHeader,
+  .attendeeEntryHeader {
+    grid-template-columns: 1fr;
+  }
+
+  .stepHeader,
+  .attendeeEntryHeader {
+    display: grid;
+  }
+
+  .stepHeader .secondaryButton,
+  .attendeeEntryHeader .textButton {
+    width: 100%;
   }
 
   .scannerHeader {
@@ -1242,6 +1401,19 @@ button:disabled {
   .formActions {
     align-items: stretch;
     flex-direction: column-reverse;
+  }
+
+  .formStep {
+    gap: 12px;
+    padding-bottom: 22px;
+  }
+
+  .formStep + .formStep {
+    padding-top: 22px;
+  }
+
+  .attendeeEntry {
+    padding: 14px;
   }
 
   .scannerActions,
