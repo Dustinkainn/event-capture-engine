@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { updateEvent } from "../../actions";
 import { EventForm } from "../../EventForm";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
+import { AppTopbar } from "../../../AppTopbar";
 
 type EditEventPageProps = {
   params: Promise<{ id: string }>;
@@ -22,15 +23,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
 
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">Event Builder</p>
-          <h1>Edit Event</h1>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href="/events">Events</a>
-        </div>
-      </header>
+      <AppTopbar active="events" eyebrow="Event Builder" title="Edit Event" />
       <EventWorkspaceNav active="details" eventId={event.id} />
 
       <section className="section editorLayout">

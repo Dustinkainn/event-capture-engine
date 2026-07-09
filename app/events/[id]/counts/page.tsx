@@ -11,6 +11,7 @@ import {
 } from "../../actions";
 import { CountCategoryForm } from "./CountCategoryForm";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
+import { AppTopbar } from "../../../AppTopbar";
 
 type CountBuilderPageProps = {
   params: Promise<{ id: string }>;
@@ -78,18 +79,16 @@ export default async function CountBuilderPage({ params, searchParams }: CountBu
 
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">Count Builder</p>
-          <h1>{event.name}</h1>
-        </div>
-        <div className="actions">
+      <AppTopbar
+        active="events"
+        eyebrow="Count Builder"
+        title={event.name}
+        actions={
           <form action={refreshCounts}>
             <button className="primaryButton" type="submit">Refresh Counts</button>
           </form>
-          <a className="secondaryButton" href="/events">Events</a>
-        </div>
-      </header>
+        }
+      />
       <EventWorkspaceNav active="counts" eventId={event.id} />
 
       {counts === "refreshed" ? (

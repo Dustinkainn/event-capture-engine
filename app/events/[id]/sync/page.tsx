@@ -3,6 +3,7 @@ import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { updateSyncStatus } from "../../actions";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
+import { AppTopbar } from "../../../AppTopbar";
 
 type SyncReviewPageProps = {
   params: Promise<{ id: string }>;
@@ -31,15 +32,7 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
 
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">External Sync</p>
-          <h1>{event.name}</h1>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href="/events">Events</a>
-        </div>
-      </header>
+      <AppTopbar active="events" eyebrow="External Sync" title={event.name} />
       <EventWorkspaceNav active="sync" eventId={event.id} />
 
       {updated ? (

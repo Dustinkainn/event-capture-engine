@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
+import { AppTopbar } from "../../../AppTopbar";
 
 export const dynamic = "force-dynamic";
 
@@ -78,16 +79,12 @@ export default async function CheckInLogPage({ params, searchParams }: CheckInLo
 
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">Check-In Log</p>
-          <h1>{event.name}</h1>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href={`/events/${event.id}/scanner`}>Open Scanner</a>
-          <a className="secondaryButton" href="/events">Events</a>
-        </div>
-      </header>
+      <AppTopbar
+        active="events"
+        eyebrow="Check-In Log"
+        title={event.name}
+        actions={<a className="secondaryButton" href={`/events/${event.id}/scanner`}>Open Scanner</a>}
+      />
       <EventWorkspaceNav active="check-in-log" eventId={event.id} />
 
       <section className="section">

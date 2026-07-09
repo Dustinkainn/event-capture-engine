@@ -3,6 +3,7 @@ import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { refreshEventCounts } from "../actions";
 import { EventWorkspaceNav } from "./EventWorkspaceNav";
+import { AppTopbar } from "../../AppTopbar";
 
 export const dynamic = "force-dynamic";
 
@@ -74,16 +75,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">Event Detail</p>
-          <h1>{event.name}</h1>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href="/events">Events</a>
-          <a className="secondaryButton" href="/">Dashboard</a>
-        </div>
-      </header>
+      <AppTopbar active="events" eyebrow="Event Detail" title={event.name} />
       <EventWorkspaceNav active="overview" eventId={event.id} />
 
       <section className="section">

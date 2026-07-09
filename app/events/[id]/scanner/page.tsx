@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { checkInAttendee, checkInToken, undoLatestCheckIn } from "./actions";
 import { QrCameraScanner } from "./QrCameraScanner";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
+import { AppTopbar } from "../../../AppTopbar";
 
 export const dynamic = "force-dynamic";
 
@@ -94,16 +95,13 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
 
   return (
     <main className="scannerShell">
-      <header className="scannerHeader">
-        <div>
-          <p className="eyebrow">Event Day Check-In</p>
-          <h1>{event.name}</h1>
-          <span>{formatEventDateTime(event.startsAt)}{event.locationName ? ` | ${event.locationName}` : ""}</span>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href="/events">Events</a>
-        </div>
-      </header>
+      <AppTopbar
+        active="events"
+        variant="dark"
+        eyebrow="Event Day Check-In"
+        title={event.name}
+        subtitle={`${formatEventDateTime(event.startsAt)}${event.locationName ? ` | ${event.locationName}` : ""}`}
+      />
       <EventWorkspaceNav active="check-in" eventId={event.id} />
 
       <section className="scannerLayout">

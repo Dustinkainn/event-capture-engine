@@ -20,18 +20,11 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 - [Screens](docs/screens.md)
 - [MVP spec](docs/mvp-spec.md)
 - [Phase 2 plan](docs/phase-2-plan.md)
-
-## Preview
-
-- [Preview home](wireframes/index.html)
-- [Admin console preview](wireframes/admin.html)
-- [Public registration preview](wireframes/public-registration.html)
-- [Check-in scanner preview](wireframes/scanner.html)
-- [Preview standards](wireframes/standards.md)
+- [Session recaps](docs/) (dated end-of-session summaries)
 
 ## Local App
 
-Run the MVP app scaffold:
+Run the app:
 
 ```txt
 npm install
@@ -44,8 +37,4 @@ Then open:
 http://localhost:3000
 ```
 
-The static previews are also served by the app at:
-
-```txt
-http://localhost:3000/preview/index.html
-```
+> The original static wireframes under `wireframes/` and `public/preview/` were design references for the pre-build phase. The app has moved past them and no longer links to them.

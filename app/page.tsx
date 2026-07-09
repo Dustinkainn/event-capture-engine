@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { formatEventDate, formatStatus } from "@/lib/format";
+import { AppTopbar } from "./AppTopbar";
 
 export const dynamic = "force-dynamic";
 
@@ -66,40 +67,18 @@ async function getDashboardData() {
 }
 
 export default async function Home() {
-  const { events, staffUsers, generatedCounts, syncItems, primaryEvent, metrics } = await getDashboardData();
+  const { events, staffUsers, generatedCounts, syncItems, metrics } = await getDashboardData();
 
   return (
-    <main className="shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <span className="brandMark">EC</span>
-          <div>
-            <strong>Event Capture Engine</strong>
-            <span>Operations</span>
-          </div>
-        </div>
-        <nav className="nav" aria-label="Primary">
-          <a href="#dashboard" className="active">Dashboard</a>
-          <a href="/events">Events</a>
-          <a href="#counts">Counts</a>
-          <a href="#access">Access</a>
-          <a href="#sync">External Sync</a>
-        </nav>
-      </aside>
+    <main className="pageShell">
+      <AppTopbar
+        active="dashboard"
+        eyebrow="Internal event operations"
+        title="Dashboard"
+        actions={<a className="primaryButton" href="/events/new">New Event</a>}
+      />
 
-      <section className="content">
-        <header className="topbar">
-          <div>
-            <p className="eyebrow">Internal event operations</p>
-            <h1>{primaryEvent?.name ?? "Core Capture"}</h1>
-          </div>
-          <div className="actions">
-            <a className="secondaryButton" href="/preview/index.html">Preview Home</a>
-            <a className="primaryButton" href="/events/new">New Event</a>
-          </div>
-        </header>
-
-        <section id="dashboard" className="section">
+      <section id="dashboard" className="section">
           <div className="sectionHeading">
             <div>
               <p className="eyebrow">Dashboard</p>
@@ -200,7 +179,6 @@ export default async function Home() {
             </div>
           </article>
         </section>
-      </section>
     </main>
   );
 }

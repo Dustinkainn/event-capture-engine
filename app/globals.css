@@ -32,93 +32,130 @@ a {
   font: inherit;
 }
 
-.shell {
-  display: grid;
-  grid-template-columns: 248px minmax(0, 1fr);
-  min-height: 100vh;
-}
-
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  padding: 22px 16px;
-  color: #ffffff;
-  background: var(--nav);
-}
-
-.brand {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 28px;
-}
-
-.brandMark {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 6px;
-  background: #263747;
-  font-weight: 700;
-}
-
-.brand span,
-.brand strong {
-  display: block;
-}
-
-.brand div span {
-  margin-top: 3px;
-  color: #b7c3cf;
-  font-size: 13px;
-}
-
-.nav {
-  display: grid;
-  gap: 6px;
-}
-
-.nav a {
-  padding: 11px 12px;
-  border-radius: 6px;
-  color: #dce5ed;
-  text-decoration: none;
-}
-
-.nav a:hover,
-.nav .active {
-  color: #ffffff;
-  background: var(--info);
-}
-
-.content {
-  min-width: 0;
-}
-
 .pageShell {
   min-height: 100vh;
 }
 
-.topbar,
-.simpleTopbar {
+.appTopbar {
   position: sticky;
   top: 0;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: center;
-  min-height: 88px;
-  padding: 18px 32px;
+  z-index: 3;
   border-bottom: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.96);
 }
 
-.simpleTopbar {
-  position: static;
+.appTopbarBar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 32px;
+  border-bottom: 1px solid var(--line);
+}
+
+.appBrand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.appBrand .brandMark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  color: #ffffff;
+  background: var(--nav);
+  font-size: 13px;
+}
+
+.appNav {
+  display: flex;
+  gap: 4px;
+}
+
+.appNav a {
+  display: inline-grid;
+  place-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.appNav a:hover {
+  color: var(--info);
+}
+
+.appNav a.active {
+  color: #ffffff;
+  background: var(--info);
+}
+
+.appTopbarActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.appTopbarActions form {
+  margin: 0;
+}
+
+.appTopbarTitle {
+  padding: 18px 32px;
+}
+
+.appTopbarTitle h1 {
+  margin: 0;
+}
+
+.appTopbarTitle span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+.appTopbarDark {
+  border-bottom-color: rgba(255, 255, 255, 0.14);
+  background: #18212b;
+}
+
+.appTopbarDark .appTopbarBar {
+  border-bottom-color: rgba(255, 255, 255, 0.14);
+}
+
+.appTopbarDark .appBrand {
+  color: #ffffff;
+}
+
+.appTopbarDark .appBrand .brandMark {
+  background: #263747;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.appTopbarDark .appNav a {
+  color: #b7c3cf;
+}
+
+.appTopbarDark .appNav a:hover,
+.appTopbarDark .appNav a.active {
+  color: #ffffff;
+  background: #2f6f9f;
+}
+
+.appTopbarDark .appTopbarTitle h1 {
+  color: #ffffff;
+}
+
+.appTopbarDark .appTopbarTitle span {
+  color: #b7c3cf;
 }
 
 .eventWorkspaceNav {
@@ -1677,7 +1714,6 @@ button:disabled {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .topbar,
   .actions,
   .inlineActions,
   .sectionHeading,
@@ -1724,13 +1760,34 @@ button:disabled {
 }
 
 @media (max-width: 680px) {
-  .topbar,
   .section,
   .publicHero,
   .scannerHeader,
-  .eventWorkspaceNav {
+  .eventWorkspaceNav,
+  .appTopbarBar,
+  .appTopbarTitle {
     padding-left: 18px;
     padding-right: 18px;
+  }
+
+  .appTopbarBar {
+    flex-wrap: wrap;
+  }
+
+  .appBrandName {
+    display: none;
+  }
+
+  .appTopbarActions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .appTopbarActions .primaryButton,
+  .appTopbarActions .secondaryButton,
+  .appTopbarActions form,
+  .appTopbarActions form button {
+    width: 100%;
   }
 
   .publicHero {

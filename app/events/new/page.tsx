@@ -1,19 +1,11 @@
 import { createEvent } from "../actions";
 import { EventForm } from "../EventForm";
+import { AppTopbar } from "../../AppTopbar";
 
 export default function NewEventPage() {
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">Events</p>
-          <h1>New Event</h1>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href="/events">Events</a>
-          <a className="secondaryButton" href="/">Dashboard</a>
-        </div>
-      </header>
+      <AppTopbar active="events" eyebrow="Events" title="New Event" />
 
       <section className="section editorLayout">
         <article className="panel">

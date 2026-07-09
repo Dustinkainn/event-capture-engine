@@ -3,6 +3,7 @@ import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { updateRegistrationStatus } from "../../actions";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
+import { AppTopbar } from "../../../AppTopbar";
 
 type RegistrationReviewPageProps = {
   params: Promise<{ id: string }>;
@@ -52,16 +53,12 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
 
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">Registration Review</p>
-          <h1>{event.name}</h1>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href={`/register/${event.id}`}>Public Page</a>
-          <a className="secondaryButton" href="/events">Events</a>
-        </div>
-      </header>
+      <AppTopbar
+        active="events"
+        eyebrow="Registration Review"
+        title={event.name}
+        actions={<a className="secondaryButton" href={`/register/${event.id}`}>Public Page</a>}
+      />
       <EventWorkspaceNav active="registrations" eventId={event.id} />
 
       {updated ? (

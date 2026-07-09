@@ -1,5 +1,6 @@
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { AppTopbar } from "../AppTopbar";
 
 export const dynamic = "force-dynamic";
 
@@ -15,16 +16,12 @@ export default async function EventsPage() {
 
   return (
     <main className="pageShell">
-      <header className="simpleTopbar">
-        <div>
-          <p className="eyebrow">Events</p>
-          <h1>Event List</h1>
-        </div>
-        <div className="actions">
-          <a className="secondaryButton" href="/">Dashboard</a>
-          <a className="primaryButton" href="/events/new">New Event</a>
-        </div>
-      </header>
+      <AppTopbar
+        active="events"
+        eyebrow="Events"
+        title="Event List"
+        actions={<a className="primaryButton" href="/events/new">New Event</a>}
+      />
 
       <section className="section">
         <div className="metricGrid">
