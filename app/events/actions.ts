@@ -452,3 +452,49 @@ export async function buildEventSyncPayloads(eventId: string) {
   revalidatePath(`/events/${eventId}/sync`);
   redirect(`/events/${eventId}/sync?payloads=generated`);
 }
+
+export async function simulateSyncAttempt(eventId: string, syncItemId: string, outcome: "success" | "failure") {
+  const item = await prisma.syncQueueItem.findFirst({
+    where: { id: syncItemId, eventId }
+  });
+
+  if (!item) {
+    throw new Error("Sync item could not be found.");
+  }
+
+  const now = new Date();
+  const attempts = item.attempts + 1;
+  const nextRetryAt = outcome === "failure" ? new Date(now.getTime() + 15 * 60_000) : null;
+  const responseSnapshotJson = JSON.stringify(
+    {
+      mode: "simulation",
+      attemptedAt: now.toISOString(),
+      destination: item.destination ?? "External connector placeholder",
+      outcome,
+      message:
+        outcome === "success"
+          ? "Local simulation marked this item as synced. No external API call was made."
+          : "Local simulation marked this item as failed. No external API call was made.",
+      recordType: item.recordType,
+      recordId: item.recordId
+    },
+    null,
+    2
+  );
+
+  await prisma.syncQueueItem.update({
+    where: { id: item.id },
+    data: {
+      status: outcome === "success" ? "synced" : "failed",
+      attempts,
+      responseSnapshotJson,
+      errorMessage: outcome === "failure" ? "Simulated connector failure for local review." : null,
+      nextRetryAt
+    }
+  });
+
+  revalidatePath("/");
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/sync`);
+  redirect(`/events/${eventId}/sync?simulated=${outcome}`);
+}

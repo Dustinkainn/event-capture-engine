@@ -2,7 +2,7 @@
 
 ## Status
 
-Phase 3 is starting with local sync readiness only. The app should prepare, review, and track sync payloads without requiring a live MinistryPlatform connection.
+Phase 3 is in local sync-readiness mode. The app can prepare, review, and track sync payloads without requiring a live MinistryPlatform connection.
 
 ## Goal
 
@@ -73,6 +73,13 @@ This can test:
 Why simulate first:
 
 It lets the queue and review workflow prove itself without external credentials or real data movement.
+
+Status:
+
+- Done for individual queue items.
+- Staff can simulate success or failure from the sync review page.
+- Simulated attempts save response snapshots, increment attempt counts, and set retry timing on failures.
+- No outbound API calls happen.
 
 ## Slice 5: Live Connector
 

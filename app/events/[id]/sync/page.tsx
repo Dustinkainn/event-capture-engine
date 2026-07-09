@@ -1,18 +1,18 @@
 import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { buildEventSyncPayloads, updateSyncStatus } from "../../actions";
+import { buildEventSyncPayloads, simulateSyncAttempt, updateSyncStatus } from "../../actions";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
 import { AppTopbar } from "../../../AppTopbar";
 
 type SyncReviewPageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ payloads?: string; updated?: string }>;
+  searchParams: Promise<{ payloads?: string; simulated?: string; updated?: string }>;
 };
 
 export default async function SyncReviewPage({ params, searchParams }: SyncReviewPageProps) {
   const { id } = await params;
-  const { payloads, updated } = await searchParams;
+  const { payloads, simulated, updated } = await searchParams;
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
@@ -52,6 +52,15 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
           <article className="noticePanel ok">
             <strong>Sync item updated</strong>
             <span>The queue status has been changed.</span>
+          </article>
+        </section>
+      ) : null}
+
+      {simulated ? (
+        <section className="section">
+          <article className={simulated === "success" ? "noticePanel ok" : "noticePanel warn"}>
+            <strong>{simulated === "success" ? "Simulated sync completed" : "Simulated sync failed"}</strong>
+            <span>No external API call was made. A local response snapshot was saved for review.</span>
           </article>
         </section>
       ) : null}
@@ -127,6 +136,9 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
               const markReady = updateSyncStatus.bind(null, event.id, item.id, "ready");
               const markReview = updateSyncStatus.bind(null, event.id, item.id, "review_required");
               const markSynced = updateSyncStatus.bind(null, event.id, item.id, "synced");
+              const simulateSuccess = simulateSyncAttempt.bind(null, event.id, item.id, "success");
+              const simulateFailure = simulateSyncAttempt.bind(null, event.id, item.id, "failure");
+              const canSimulate = Boolean(item.payloadSnapshotJson) && item.status !== "review_required";
 
               return (
                 <details className="reviewItem" key={item.id}>
@@ -150,6 +162,11 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
                       <pre>{item.payloadSnapshotJson ?? "{\n  \"status\": \"No payload snapshot yet\"\n}"}</pre>
                     </div>
 
+                    <div className="syncSnapshot">
+                      <strong>Response snapshot</strong>
+                      <pre>{item.responseSnapshotJson ?? "{\n  \"status\": \"No simulated response yet\"\n}"}</pre>
+                    </div>
+
                     {item.errorMessage ? (
                       <div className="noticePanel warn">
                         <strong>Error</strong>
@@ -158,6 +175,12 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
                     ) : null}
 
                     <div className="formActions">
+                      <form action={simulateSuccess}>
+                        <button className="primaryButton" type="submit" disabled={!canSimulate}>Simulate Success</button>
+                      </form>
+                      <form action={simulateFailure}>
+                        <button className="secondaryButton" type="submit" disabled={!canSimulate}>Simulate Failure</button>
+                      </form>
                       <form action={markReady}>
                         <button className="secondaryButton" type="submit">Mark Ready</button>
                       </form>
