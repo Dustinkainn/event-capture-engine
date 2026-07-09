@@ -19,6 +19,7 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 - [False-negative risks](docs/false-negative-risks.md)
 - [Screens](docs/screens.md)
 - [MVP spec](docs/mvp-spec.md)
+- [Phase 2 plan](docs/phase-2-plan.md)
 
 ## Preview
 

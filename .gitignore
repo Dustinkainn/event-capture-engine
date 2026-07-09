@@ -29,5 +29,9 @@ pnpm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+.claude/
+
+# TypeScript build info
+*.tsbuildinfo
 
 certificates/
