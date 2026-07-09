@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateEventCounts } from "@/lib/counts";
@@ -9,6 +10,56 @@ type ScannerResult = "checked-in" | "undo-saved" | "already-checked-in" | "needs
 
 function scannerRedirect(eventId: string, result: ScannerResult): never {
   redirect(`/events/${eventId}/scanner?result=${result}`);
+}
+
+function stationCookieName(eventId: string) {
+  return `ece_station_${eventId}`;
+}
+
+export async function getActiveStationId(eventId: string) {
+  const cookieStore = await cookies();
+  const value = cookieStore.get(stationCookieName(eventId))?.value;
+  if (!value) {
+    return null;
+  }
+
+  const device = await prisma.eventDevice.findFirst({
+    where: { id: value, eventId },
+    select: { id: true }
+  });
+
+  return device?.id ?? null;
+}
+
+export async function selectStation(eventId: string, formData: FormData) {
+  const deviceId = typeof formData.get("deviceId") === "string" ? (formData.get("deviceId") as string).trim() : "";
+  const newStationName =
+    typeof formData.get("newStationName") === "string" ? (formData.get("newStationName") as string).trim() : "";
+
+  let stationId: string | null = null;
+
+  if (newStationName) {
+    const device = await prisma.eventDevice.create({
+      data: { eventId, name: newStationName, deviceType: "scanner", lastSeenAt: new Date() }
+    });
+    stationId = device.id;
+  } else if (deviceId) {
+    const device = await prisma.eventDevice.findFirst({ where: { id: deviceId, eventId } });
+    if (device) {
+      await prisma.eventDevice.update({ where: { id: device.id }, data: { lastSeenAt: new Date() } });
+      stationId = device.id;
+    }
+  }
+
+  const cookieStore = await cookies();
+  if (stationId) {
+    cookieStore.set(stationCookieName(eventId), stationId, { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 });
+  } else {
+    cookieStore.delete(stationCookieName(eventId));
+  }
+
+  revalidatePath(`/events/${eventId}/scanner`);
+  redirect(`/events/${eventId}/scanner?result=station-set`);
 }
 
 export async function checkInAttendee(eventId: string, attendeeId: string) {
@@ -31,6 +82,8 @@ export async function checkInAttendee(eventId: string, attendeeId: string) {
     scannerRedirect(eventId, "already-checked-in");
   }
 
+  const stationId = await getActiveStationId(eventId);
+
   await prisma.$transaction([
     prisma.attendee.update({
       where: { id: attendee.id },
@@ -41,10 +94,14 @@ export async function checkInAttendee(eventId: string, attendeeId: string) {
         eventId,
         registrationId: attendee.registrationId,
         attendeeId: attendee.id,
+        deviceId: stationId,
         action: "check_in",
         checkedInAt: new Date()
       }
     }),
+    ...(stationId
+      ? [prisma.eventDevice.update({ where: { id: stationId }, data: { lastSeenAt: new Date() } })]
+      : []),
     prisma.syncQueueItem.create({
       data: {
         eventId,
@@ -104,6 +161,7 @@ export async function checkInToken(eventId: string, formData: FormData) {
   }
 
   const checkedInAt = new Date();
+  const stationId = await getActiveStationId(eventId);
 
   await prisma.$transaction([
     prisma.attendee.updateMany({
@@ -118,6 +176,7 @@ export async function checkInToken(eventId: string, formData: FormData) {
         registrationId: token.registrationId,
         attendeeId: attendee.id,
         qrTokenId: token.id,
+        deviceId: stationId,
         action: "check_in",
         checkedInAt
       }))
@@ -129,6 +188,9 @@ export async function checkInToken(eventId: string, formData: FormData) {
         usedAt: checkedInAt
       }
     }),
+    ...(stationId
+      ? [prisma.eventDevice.update({ where: { id: stationId }, data: { lastSeenAt: new Date() } })]
+      : []),
     prisma.syncQueueItem.create({
       data: {
         eventId,
@@ -163,6 +225,8 @@ export async function undoLatestCheckIn(eventId: string) {
     scannerRedirect(eventId, "not-found");
   }
 
+  const stationId = await getActiveStationId(eventId);
+
   await prisma.$transaction([
     prisma.attendee.update({
       where: { id: latestCheckIn.attendeeId },
@@ -173,6 +237,7 @@ export async function undoLatestCheckIn(eventId: string) {
         eventId,
         registrationId: latestCheckIn.registrationId,
         attendeeId: latestCheckIn.attendeeId,
+        deviceId: stationId,
         action: "undo",
         checkedInAt: new Date(),
         notes: "Undone from scanner"

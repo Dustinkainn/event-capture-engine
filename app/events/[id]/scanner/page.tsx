@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { checkInAttendee, checkInToken, undoLatestCheckIn } from "./actions";
+import { checkInAttendee, checkInToken, getActiveStationId, selectStation, undoLatestCheckIn } from "./actions";
 import { QrCameraScanner } from "./QrCameraScanner";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
 import { AppTopbar } from "../../../AppTopbar";
@@ -17,6 +17,11 @@ const resultMessages: Record<string, { title: string; detail: string; tone: stri
   "checked-in": {
     title: "Check-in saved",
     detail: "The attendee status and event totals have been updated.",
+    tone: "ok"
+  },
+  "station-set": {
+    title: "Station updated",
+    detail: "New check-ins on this device will record this station.",
     tone: "ok"
   },
   "undo-saved": {
@@ -92,6 +97,9 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
   const resultMessage = result ? resultMessages[result] : null;
   const undoCheckIn = undoLatestCheckIn.bind(null, event.id);
   const scanToken = checkInToken.bind(null, event.id);
+  const setStation = selectStation.bind(null, event.id);
+  const activeStationId = await getActiveStationId(event.id);
+  const activeStation = event.devices.find((device) => device.id === activeStationId) ?? null;
 
   return (
     <main className="scannerShell">
@@ -125,6 +133,30 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
               <span>{resultMessage.detail}</span>
             </article>
           ) : null}
+
+          <article className="scannerPanel">
+            <div className="panelHeading">
+              <h2>Station</h2>
+              <span className="statusPill">{activeStation ? activeStation.name : "Not set"}</span>
+            </div>
+            <p className="stationHint">
+              {activeStation
+                ? "Check-ins from this device are recorded to this station."
+                : "Set a station so check-ins record where they happened."}
+            </p>
+            <form action={setStation} className="stationForm">
+              <label htmlFor="deviceId">Use an existing station</label>
+              <select id="deviceId" name="deviceId" defaultValue={activeStation?.id ?? ""}>
+                <option value="">No station</option>
+                {event.devices.map((device) => (
+                  <option key={device.id} value={device.id}>{device.name}</option>
+                ))}
+              </select>
+              <label htmlFor="newStationName">Or add a new station</label>
+              <input id="newStationName" name="newStationName" placeholder="e.g. Front Door iPad" />
+              <button className="secondaryButton" type="submit">Set Station</button>
+            </form>
+          </article>
 
           <article className="scannerPanel">
             <div className="panelHeading">
