@@ -444,6 +444,42 @@ h2 {
   border-left-color: var(--warning);
 }
 
+.connectorPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.8fr) auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.connectorPanel p:not(.eyebrow) {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.connectorStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.connectorStatusGrid div {
+  min-height: 70px;
+  padding: 12px;
+  border-left: 4px solid var(--info);
+  background: var(--field);
+}
+
+.connectorStatusGrid strong,
+.connectorStatusGrid span {
+  display: block;
+}
+
+.connectorStatusGrid span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .syncRows .danger {
   border-left-color: var(--danger);
 }
@@ -1829,6 +1865,8 @@ button:disabled {
   .registrationOverview,
   .eventDirectoryRow,
   .confirmationGrid,
+  .connectorPanel,
+  .connectorStatusGrid,
   .scannerLayout {
     grid-template-columns: 1fr;
   }

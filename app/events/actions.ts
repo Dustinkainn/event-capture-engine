@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateEventCounts } from "@/lib/counts";
 import { prisma } from "@/lib/prisma";
+import { buildSyncPayload } from "@/lib/syncPayloads";
 
 function getString(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -422,4 +423,32 @@ export async function updateSyncStatus(eventId: string, syncItemId: string, stat
   revalidatePath(`/events/${eventId}`);
   revalidatePath(`/events/${eventId}/sync`);
   redirect(`/events/${eventId}/sync?updated=1`);
+}
+
+export async function buildEventSyncPayloads(eventId: string) {
+  const items = await prisma.syncQueueItem.findMany({
+    where: { eventId },
+    orderBy: { updatedAt: "asc" }
+  });
+
+  for (const item of items) {
+    const result = await buildSyncPayload(prisma, item.recordType, item.recordId);
+
+    await prisma.syncQueueItem.update({
+      where: { id: item.id },
+      data: {
+        destination: "External connector placeholder",
+        payloadSnapshotJson: result.payloadJson,
+        errorMessage: result.errorMessage,
+        responseSnapshotJson: null,
+        status: result.errorMessage ? "review_required" : "ready",
+        nextRetryAt: null
+      }
+    });
+  }
+
+  revalidatePath("/");
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/sync`);
+  redirect(`/events/${eventId}/sync?payloads=generated`);
 }

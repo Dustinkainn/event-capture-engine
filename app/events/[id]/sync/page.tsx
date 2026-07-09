@@ -1,18 +1,18 @@
 import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { updateSyncStatus } from "../../actions";
+import { buildEventSyncPayloads, updateSyncStatus } from "../../actions";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
 import { AppTopbar } from "../../../AppTopbar";
 
 type SyncReviewPageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ updated?: string }>;
+  searchParams: Promise<{ payloads?: string; updated?: string }>;
 };
 
 export default async function SyncReviewPage({ params, searchParams }: SyncReviewPageProps) {
   const { id } = await params;
-  const { updated } = await searchParams;
+  const { payloads, updated } = await searchParams;
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
@@ -29,11 +29,23 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
   const ready = event.syncQueueItems.filter((item) => item.status === "ready" || item.status === "queued").length;
   const review = event.syncQueueItems.filter((item) => item.status === "failed" || item.status === "review_required").length;
   const synced = event.syncQueueItems.filter((item) => item.status === "synced").length;
+  const withPayload = event.syncQueueItems.filter((item) => item.payloadSnapshotJson).length;
+  const hasConnectorKey = Boolean(process.env.MINISTRY_PLATFORM_API_KEY);
+  const buildPayloads = buildEventSyncPayloads.bind(null, event.id);
 
   return (
     <main className="pageShell">
       <AppTopbar active="events" eyebrow="External Sync" title={event.name} />
       <EventWorkspaceNav active="sync" eventId={event.id} />
+
+      {payloads === "generated" ? (
+        <section className="section">
+          <article className="noticePanel ok">
+            <strong>Payload snapshots generated</strong>
+            <span>Records were prepared locally. No external connection was attempted.</span>
+          </article>
+        </section>
+      ) : null}
 
       {updated ? (
         <section className="section">
@@ -67,6 +79,35 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
             <small>{formatEventDateTime(event.updatedAt)}</small>
           </article>
         </div>
+      </section>
+
+      <section className="section">
+        <article className="panel connectorPanel">
+          <div>
+            <p className="eyebrow">Connector</p>
+            <h2>External System Placeholder</h2>
+            <p>
+              Payloads can be reviewed and marked locally. A live MinistryPlatform connection is intentionally not active.
+            </p>
+          </div>
+          <div className="connectorStatusGrid">
+            <div>
+              <strong>{hasConnectorKey ? "Key present" : "No key set"}</strong>
+              <span>MINISTRY_PLATFORM_API_KEY placeholder</span>
+            </div>
+            <div>
+              <strong>{withPayload}/{event.syncQueueItems.length}</strong>
+              <span>payload snapshots</span>
+            </div>
+            <div>
+              <strong>Local only</strong>
+              <span>No outbound API calls</span>
+            </div>
+          </div>
+          <form action={buildPayloads}>
+            <button className="primaryButton" type="submit">Build Payload Snapshots</button>
+          </form>
+        </article>
       </section>
 
       <section className="section">

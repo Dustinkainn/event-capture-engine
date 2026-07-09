@@ -20,6 +20,7 @@ The app owns the event capture workflow. MinistryPlatform is the final sync dest
 - [Screens](docs/screens.md)
 - [MVP spec](docs/mvp-spec.md)
 - [Phase 2 plan](docs/phase-2-plan.md)
+- [Phase 3 plan](docs/phase-3-plan.md)
 - [Session recaps](docs/) (dated end-of-session summaries)
 
 ## Local App
