@@ -119,7 +119,10 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               <h2>Check-In</h2>
               <span>{checkedIn.length} of {activeAttendees.length} guests checked in</span>
             </div>
-            <a className="primaryButton" href={`/events/${event.id}/scanner`}>Open Scanner</a>
+            <div className="hubActions">
+              <a className="primaryButton" href={`/events/${event.id}/scanner`}>Open Scanner</a>
+              <a className="secondaryButton" href={`/events/${event.id}/checkins`}>Check-In Log</a>
+            </div>
           </article>
 
           <article className="hubCard">
@@ -238,7 +241,10 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
       <section className="section detailGrid">
         <article className="panel">
-          <h2>Check-In Snapshot</h2>
+          <div className="panelHeading">
+            <h2>Check-In Snapshot</h2>
+            <a className="textButton" href={`/events/${event.id}/checkins`}>Full Log</a>
+          </div>
           <div className="accessList">
             {event.checkIns.length === 0 ? (
               <div className="accessRow"><strong>No check-ins yet</strong><span>Event-day activity will appear here.</span></div>

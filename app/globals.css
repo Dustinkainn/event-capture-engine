@@ -1504,6 +1504,100 @@ button:disabled {
   opacity: 0.65;
 }
 
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterBar a {
+  display: inline-grid;
+  place-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.filterBar a:hover {
+  border-color: var(--info);
+  color: var(--info);
+}
+
+.filterBar a.active {
+  border-color: var(--info);
+  color: #ffffff;
+  background: var(--info);
+}
+
+.attendanceList,
+.logList {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.attendanceRow,
+.logRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--info);
+  border-radius: 6px;
+  background: var(--field);
+}
+
+.attendanceRow.ok,
+.logRow.ok {
+  border-left-color: var(--action);
+}
+
+.attendanceRow.warn,
+.logRow.warn {
+  border-left-color: var(--warning);
+}
+
+.attendanceRow strong,
+.attendanceRow span,
+.logRow strong,
+.logRow span {
+  display: block;
+}
+
+.attendanceRow span,
+.logRow span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.attendanceRow small {
+  color: var(--muted);
+  font-weight: 700;
+  text-align: right;
+}
+
+.attendanceRow small span {
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.logRow em {
+  color: var(--muted);
+  font-size: 13px;
+  font-style: normal;
+  text-align: right;
+  white-space: nowrap;
+}
+
 .formError {
   display: grid;
   gap: 4px;
@@ -1698,10 +1792,17 @@ button:disabled {
   .detailList div,
   .mappingRow,
   .lookupRow,
+  .attendanceRow,
+  .logRow,
   .reviewItem summary,
   .formStep,
   .formSection {
     grid-template-columns: 1fr;
+  }
+
+  .attendanceRow small,
+  .logRow em {
+    text-align: left;
   }
 
   .reviewItem summary {
