@@ -22,10 +22,27 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
   const [token, setToken] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const scannerRef = useRef<{ stop: () => Promise<void>; clear: () => void } | null>(null);
+  const scanLockRef = useRef(false);
   const readerId = `qr-reader-${eventId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const resumeKey = `ece_scanner_resume_${eventId}`;
 
   useEffect(() => {
-    void inspectCamera();
+    let cancelled = false;
+
+    void (async () => {
+      const canUse = await inspectCamera();
+      if (cancelled) {
+        return;
+      }
+
+      if (canUse && window.sessionStorage.getItem(resumeKey) === "1") {
+        await startScanner();
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function inspectCamera() {
@@ -34,7 +51,7 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
       setStatusTone("danger");
       setCanUseCamera(false);
       setCameraDetails(["Open this page from localhost or a secure HTTPS address"]);
-      return;
+      return false;
     }
 
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -42,7 +59,7 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
       setStatusTone("danger");
       setCanUseCamera(false);
       setCameraDetails(["Try Chrome, Edge, Safari, or another browser with camera support"]);
-      return;
+      return false;
     }
 
     let permissionState = "Camera permission has not been requested";
@@ -67,9 +84,10 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
         label: device.label || `Camera ${index + 1}`
       }));
 
+    const canUse = videoDevices.length > 0 && permissionState !== "Camera permission is blocked";
     setDevices(videoDevices);
     setSelectedCameraId((current) => current || videoDevices[0]?.deviceId || "");
-    setCanUseCamera(videoDevices.length > 0 && permissionState !== "Camera permission is blocked");
+    setCanUseCamera(canUse);
 
     if (permissionState === "Camera permission is blocked") {
       setStatus("Camera permission was blocked");
@@ -87,9 +105,15 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
       videoDevices.length === 1 ? "1 camera detected" : `${videoDevices.length} cameras detected`,
       window.location.protocol === "https:" ? "Secure page" : "Localhost camera access"
     ]);
+
+    return canUse;
   }
 
-  async function stopScanner() {
+  async function stopScanner(userInitiated = false) {
+    if (userInitiated) {
+      window.sessionStorage.removeItem(resumeKey);
+    }
+
     if (!scannerRef.current) {
       return;
     }
@@ -97,8 +121,12 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
     await scannerRef.current.stop().catch(() => undefined);
     scannerRef.current.clear();
     scannerRef.current = null;
-    setStatus("Camera stopped");
-    setStatusTone("idle");
+    scanLockRef.current = false;
+
+    if (userInitiated) {
+      setStatus("Camera stopped");
+      setStatusTone("idle");
+    }
   }
 
   async function startScanner() {
@@ -135,25 +163,37 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
     const cameraId = selectedCameraId || availableDevices[0]?.deviceId || "";
     const scanner = new Html5Qrcode(readerId);
     scannerRef.current = scanner;
+    scanLockRef.current = false;
 
-    await scanner.start(
-      cameraId ? { deviceId: { exact: cameraId } } : { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 260, height: 260 } },
-      async (decodedText) => {
-        setStatus("QR code read");
-        setStatusTone("ok");
-        setToken(decodedText);
-        await stopScanner();
-        window.setTimeout(() => formRef.current?.requestSubmit(), 0);
-      },
-      () => undefined
-    ).catch((error) => {
+    try {
+      await scanner.start(
+        cameraId ? { deviceId: { exact: cameraId } } : { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 260, height: 260 } },
+        async (decodedText) => {
+          if (scanLockRef.current) {
+            return;
+          }
+
+          scanLockRef.current = true;
+          setStatus("QR code read");
+          setStatusTone("ok");
+          setToken(decodedText);
+          await stopScanner();
+          window.setTimeout(() => formRef.current?.requestSubmit(), 0);
+        },
+        () => undefined
+      );
+
+      window.sessionStorage.setItem(resumeKey, "1");
+      setStatus("Scanning — point the camera at a QR code");
+      setStatusTone("ok");
+    } catch (error) {
       scannerRef.current = null;
       const message = error instanceof Error ? error.message : "Camera could not start";
       setStatus(message.includes("Permission") ? "Camera permission was blocked" : message);
       setStatusTone(message.includes("Permission") ? "danger" : "warn");
       void inspectCamera();
-    });
+    }
   }
 
   return (
@@ -174,7 +214,7 @@ export function QrCameraScanner({ action, eventId }: QrCameraScannerProps) {
       ) : null}
       <div className="cameraControls">
         <button className="primaryButton" type="button" onClick={startScanner} disabled={!canUseCamera}>Start Camera</button>
-        <button className="secondaryButton" type="button" onClick={stopScanner}>Stop Camera</button>
+        <button className="secondaryButton" type="button" onClick={() => void stopScanner(true)}>Stop Camera</button>
         <button className="secondaryButton" type="button" onClick={() => void inspectCamera()}>Recheck Camera</button>
       </div>
       <div className={`cameraStatus ${statusTone}`}>
