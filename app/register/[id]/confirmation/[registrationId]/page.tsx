@@ -2,6 +2,14 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { formatEventDateTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { ConfirmationActions } from "./ConfirmationActions";
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 type ConfirmationPageProps = {
   params: Promise<{ id: string; registrationId: string }>;
@@ -25,6 +33,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
   const token = registration.qrTokens[0];
   const qrImage = token ? await QRCode.toDataURL(token.tokenHash, { margin: 1, width: 280 }) : null;
   const isReadyForCheckIn = token?.status === "unused";
+  const qrDownloadName = `${slugify(registration.event.name) || "event"}-checkin-qr.png`;
 
   return (
     <main className="publicShell">
@@ -42,7 +51,8 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
             <div>
               <span className="statusPill">{isReadyForCheckIn ? "Ready for check-in" : "Checked in"}</span>
               <h2>{registration.primaryFirstName}, your registration is saved.</h2>
-              <p>Keep this page handy. Your QR code connects this registration and all listed attendees at check-in.</p>
+              <p className="confirmationEvent">{registration.event.name} | {formatEventDateTime(registration.event.startsAt)}{registration.event.locationName ? ` | ${registration.event.locationName}` : ""}</p>
+              <p>Keep this page handy. Save or print your QR code, or bookmark this link to return to it. Staff can also find you by name at check-in.</p>
             </div>
           </div>
 
@@ -59,6 +69,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
                   <span>Staff can still find this registration by name.</span>
                 </div>
               )}
+              <ConfirmationActions qrDataUrl={qrImage} downloadName={qrDownloadName} />
               <div className="checkInInstructions">
                 <strong>At the event</strong>
                 <span>Have this QR code ready when you arrive. Staff can scan it once for the full registration.</span>

@@ -1189,6 +1189,23 @@ th {
   color: var(--muted);
 }
 
+.confirmationEvent {
+  margin-top: 8px;
+  color: var(--ink) !important;
+  font-weight: 700;
+}
+
+.confirmationActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.confirmationActions .primaryButton,
+.confirmationActions .secondaryButton {
+  min-width: 120px;
+}
+
 .confirmationGrid {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
@@ -1975,5 +1992,40 @@ button:disabled {
 
   .scannerActions form {
     grid-column: auto;
+  }
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .appTopbar,
+  .publicHero,
+  .confirmationActions,
+  .checkInInstructions,
+  .formActions {
+    display: none !important;
+  }
+
+  .publicShell,
+  .publicContent {
+    width: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .publicCard,
+  .confirmationCard {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .confirmationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .qrCard {
+    border: 1px solid #d8dee6;
   }
 }
