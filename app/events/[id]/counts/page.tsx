@@ -71,6 +71,10 @@ export default async function CountBuilderPage({ params, searchParams }: CountBu
     }))
   );
   const questionsWithOptions = event.questions.filter((question) => question.options.length > 0);
+  const registrationCounts = event.generatedCounts.filter((count) => count.sourceFilter === "complete");
+  const attendanceCounts = event.generatedCounts.filter(
+    (count) => count.sourceFilter === "registered" || count.sourceFilter === "checked_in"
+  );
 
   return (
     <main className="pageShell">
@@ -92,7 +96,7 @@ export default async function CountBuilderPage({ params, searchParams }: CountBu
         <section className="section">
           <article className="noticePanel ok">
             <strong>Counts refreshed</strong>
-            <span>Totals now reflect completed registrations and mapped answers.</span>
+            <span>Totals now reflect completed registrations, mapped answers, and check-ins.</span>
           </article>
         </section>
       ) : null}
@@ -142,17 +146,17 @@ export default async function CountBuilderPage({ params, searchParams }: CountBu
       <section className="section detailGrid">
         <article className="panel">
           <div className="panelHeading">
-            <h2>Generated Totals</h2>
-            <span className="statusPill">{event.generatedCounts.length} totals</span>
+            <h2>Registration Totals</h2>
+            <span className="statusPill">{registrationCounts.length} totals</span>
           </div>
-          {event.generatedCounts.length === 0 ? (
+          {registrationCounts.length === 0 ? (
             <div className="emptyState">
               <strong>No generated totals yet</strong>
               <span>Refresh counts after registrations have been submitted.</span>
             </div>
           ) : (
             <div className="barList">
-              {event.generatedCounts.map((count) => {
+              {registrationCounts.map((count) => {
                 const width = `${Math.min(100, Math.max(8, count.total))}%`;
                 return (
                   <div key={count.id}>
@@ -166,6 +170,38 @@ export default async function CountBuilderPage({ params, searchParams }: CountBu
           )}
         </article>
 
+        <article className="panel">
+          <div className="panelHeading">
+            <h2>Attendance Totals</h2>
+            <a className="textButton" href={`/events/${event.id}/checkins`}>Check-In Log</a>
+          </div>
+          {attendanceCounts.length === 0 ? (
+            <div className="emptyState">
+              <strong>No attendance totals yet</strong>
+              <span>Refresh counts, or check someone in from the scanner.</span>
+            </div>
+          ) : (
+            <div className="barList">
+              {attendanceCounts.map((count) => {
+                const width = `${Math.min(100, Math.max(8, count.total))}%`;
+                const label =
+                  count.countCategory.sourceType === "check_in"
+                    ? count.countItem?.label ?? "Total"
+                    : `${count.countCategory.name}: ${count.countItem?.label ?? "Total"} checked in`;
+                return (
+                  <div key={count.id}>
+                    <span>{label}</span>
+                    <b style={{ width }} />
+                    <em>{count.total}</em>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </article>
+      </section>
+
+      <section className="section detailGrid">
         <article className="panel">
           <div className="panelHeading">
             <h2>Answer Mapping</h2>
@@ -195,9 +231,7 @@ export default async function CountBuilderPage({ params, searchParams }: CountBu
             ))}
           </div>
         </article>
-      </section>
 
-      <section className="section detailGrid">
         <article className="panel">
           <h2>Add Mapping</h2>
           <form action={addMapping} className="editorForm compactForm">

@@ -21,6 +21,7 @@ async function getDashboardData() {
       }
     }),
     prisma.generatedCount.findMany({
+      where: { sourceFilter: "complete" },
       orderBy: { generatedAt: "desc" },
       include: {
         countItem: true,

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { generateEventCounts } from "@/lib/counts";
 import { prisma } from "@/lib/prisma";
 
 type ScannerResult = "checked-in" | "undo-saved" | "already-checked-in" | "needs-review" | "wrong-event" | "not-found";
@@ -55,8 +56,11 @@ export async function checkInAttendee(eventId: string, attendeeId: string) {
     })
   ]);
 
+  await generateEventCounts(prisma, eventId);
+
   revalidatePath("/");
   revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
   revalidatePath(`/events/${eventId}/scanner`);
   scannerRedirect(eventId, "checked-in");
 }
@@ -136,8 +140,11 @@ export async function checkInToken(eventId: string, formData: FormData) {
     })
   ]);
 
+  await generateEventCounts(prisma, eventId);
+
   revalidatePath("/");
   revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
   revalidatePath(`/events/${eventId}/scanner`);
   scannerRedirect(eventId, "checked-in");
 }
@@ -173,8 +180,11 @@ export async function undoLatestCheckIn(eventId: string) {
     })
   ]);
 
+  await generateEventCounts(prisma, eventId);
+
   revalidatePath("/");
   revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/events/${eventId}/counts`);
   revalidatePath(`/events/${eventId}/scanner`);
   scannerRedirect(eventId, "undo-saved");
 }

@@ -201,7 +201,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             </div>
           </div>
           <div className="barList">
-            {event.generatedCounts.slice(0, 8).map((count) => {
+            {event.generatedCounts.filter((count) => count.sourceFilter === "complete").slice(0, 8).map((count) => {
               const width = `${Math.min(100, Math.max(8, count.total))}%`;
               return (
                 <div key={count.id}>
