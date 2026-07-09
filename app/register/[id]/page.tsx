@@ -27,7 +27,20 @@ export default async function RegistrationPage({ params }: RegistrationPageProps
   }
 
   const register = submitRegistration.bind(null, event.id);
-  const remaining = event.capacity ? Math.max(event.capacity - event.attendees.length, 0) : null;
+  const activeAttendees = event.attendees.filter((attendee) => attendee.status === "active").length;
+  const remaining = event.capacity !== null ? Math.max(event.capacity - activeAttendees, 0) : null;
+
+  const now = new Date();
+  const notYetOpen = Boolean(event.registrationOpensAt && now < event.registrationOpensAt);
+  const closed = Boolean(event.registrationClosesAt && now > event.registrationClosesAt);
+  const isFull = remaining !== null && remaining <= 0;
+  const unavailableReason = notYetOpen
+    ? `Registration opens ${formatEventDateTime(event.registrationOpensAt as Date)}.`
+    : closed
+      ? "Registration for this event has closed."
+      : isFull
+        ? "This event is full. No spots remain."
+        : null;
 
   return (
     <main className="publicShell">
@@ -47,13 +60,24 @@ export default async function RegistrationPage({ params }: RegistrationPageProps
             <p>{event.description ?? "Complete the registration details below."}</p>
           </div>
           <div className="publicStats">
-            <div><strong>{event.attendees.length}</strong><span>registered</span></div>
+            <div><strong>{activeAttendees}</strong><span>registered</span></div>
             <div><strong>{remaining ?? "Open"}</strong><span>{remaining === null ? "capacity" : "spots left"}</span></div>
             <div><strong>{event.isPaid ? "Paid" : "Free"}</strong><span>event</span></div>
           </div>
         </article>
 
-        <RegistrationForm action={register} questions={event.questions} />
+        {unavailableReason ? (
+          <article className="publicCard registrationClosedCard">
+            <p className="eyebrow">Registration</p>
+            <h2>Registration is not open right now.</h2>
+            <p>{unavailableReason}</p>
+            <div className="messageActions">
+              <a className="secondaryButton" href="/events">Back to events</a>
+            </div>
+          </article>
+        ) : (
+          <RegistrationForm action={register} questions={event.questions} />
+        )}
       </section>
     </main>
   );

@@ -36,7 +36,12 @@ function getOptionalNumber(formData: FormData, name: string) {
 
 function getOptionalDate(formData: FormData, name: string) {
   const value = getString(formData, name);
-  return value ? new Date(value) : null;
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function getEventPayload(formData: FormData) {

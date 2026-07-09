@@ -19,7 +19,12 @@ function getOptionalString(formData: FormData, name: string) {
 
 function getOptionalDate(formData: FormData, name: string) {
   const value = getString(formData, name);
-  return value ? new Date(value) : null;
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function getAttendeeKeys(formData: FormData) {
@@ -31,7 +36,19 @@ function getAttendeeKeys(formData: FormData) {
   return keys.length > 0 ? keys : ["0"];
 }
 
-export async function submitRegistration(eventId: string, formData: FormData) {
+function looksLikeEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+export type RegistrationFormState = {
+  error: string | null;
+};
+
+export async function submitRegistration(
+  eventId: string,
+  _prevState: RegistrationFormState,
+  formData: FormData
+): Promise<RegistrationFormState> {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     include: {
@@ -43,11 +60,25 @@ export async function submitRegistration(eventId: string, formData: FormData) {
   });
 
   if (!event) {
-    throw new Error("Event could not be found.");
+    return { error: "This event could not be found. It may have been removed." };
+  }
+
+  if (event.status !== "open" || event.visibility !== "public") {
+    return { error: "Registration for this event is not currently open." };
+  }
+
+  const now = new Date();
+  if (event.registrationOpensAt && now < event.registrationOpensAt) {
+    return { error: "Registration for this event has not opened yet." };
+  }
+
+  if (event.registrationClosesAt && now > event.registrationClosesAt) {
+    return { error: "Registration for this event has closed." };
   }
 
   const primaryFirstName = getString(formData, "primaryFirstName");
   const primaryLastName = getString(formData, "primaryLastName");
+  const primaryEmail = getOptionalString(formData, "primaryEmail");
   const attendeeKeys = getAttendeeKeys(formData);
   const attendeesToCreate = attendeeKeys
     .map((key) => ({
@@ -60,8 +91,40 @@ export async function submitRegistration(eventId: string, formData: FormData) {
     }))
     .filter((attendee) => attendee.firstName);
 
-  if (!primaryFirstName || !primaryLastName || attendeesToCreate.length === 0) {
-    throw new Error("Primary contact and attendee name are required.");
+  if (!primaryFirstName || !primaryLastName) {
+    return { error: "Please enter the primary contact's first and last name." };
+  }
+
+  if (attendeesToCreate.length === 0) {
+    return { error: "Add at least one attendee with a first name." };
+  }
+
+  if (primaryEmail && !looksLikeEmail(primaryEmail)) {
+    return { error: "Please enter a valid email address for the primary contact." };
+  }
+
+  const invalidAttendeeEmail = attendeesToCreate.find(
+    (attendee) => attendee.email && !looksLikeEmail(attendee.email)
+  );
+  if (invalidAttendeeEmail) {
+    return { error: "Please check the attendee email addresses. One does not look valid." };
+  }
+
+  if (event.capacity !== null) {
+    const activeAttendees = await prisma.attendee.count({
+      where: { eventId, status: "active" }
+    });
+    const remaining = event.capacity - activeAttendees;
+
+    if (remaining <= 0) {
+      return { error: "This event is full. No spots remain." };
+    }
+
+    if (attendeesToCreate.length > remaining) {
+      return {
+        error: `Only ${remaining} ${remaining === 1 ? "spot remains" : "spots remain"} for this event. Please remove some attendees.`
+      };
+    }
   }
 
   const registration = await prisma.$transaction(async (tx) => {
@@ -70,7 +133,7 @@ export async function submitRegistration(eventId: string, formData: FormData) {
         eventId,
         primaryFirstName,
         primaryLastName,
-        primaryEmail: getOptionalString(formData, "primaryEmail"),
+        primaryEmail,
         primaryPhone: getOptionalString(formData, "primaryPhone"),
         status: event.isPaid ? "submitted" : "complete",
         paymentStatus: event.isPaid ? "pending" : "not_required",

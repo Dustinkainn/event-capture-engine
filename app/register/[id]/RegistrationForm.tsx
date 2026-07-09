@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
+import type { RegistrationFormState } from "../actions";
 
 type RegistrationQuestionOption = {
   id: string;
@@ -18,7 +19,7 @@ type RegistrationQuestion = {
 };
 
 type RegistrationFormProps = {
-  action: (formData: FormData) => void;
+  action: (state: RegistrationFormState, formData: FormData) => Promise<RegistrationFormState>;
   questions: RegistrationQuestion[];
 };
 
@@ -45,6 +46,7 @@ function formatScope(scope: string) {
 }
 
 export function RegistrationForm({ action, questions }: RegistrationFormProps) {
+  const [state, formAction, isPending] = useActionState(action, { error: null });
   const [attendees, setAttendees] = useState([0]);
   const registrationQuestions = questions.filter((question) => question.scope === "registration");
   const attendeeQuestions = questions.filter((question) => question.scope === "attendee");
@@ -94,7 +96,14 @@ export function RegistrationForm({ action, questions }: RegistrationFormProps) {
   }
 
   return (
-    <form action={action} className="publicCard registrationForm">
+    <form action={formAction} className="publicCard registrationForm">
+      {state.error ? (
+        <div className="formError" role="alert">
+          <strong>We could not complete your registration.</strong>
+          <span>{state.error}</span>
+        </div>
+      ) : null}
+
       <section className="formStep">
         <span className="stepBadge">1</span>
         <div>
@@ -196,7 +205,9 @@ export function RegistrationForm({ action, questions }: RegistrationFormProps) {
 
       <div className="formActions">
         <a className="secondaryButton" href="/events">Back to events</a>
-        <button className="primaryButton" type="submit">Complete Registration</button>
+        <button className="primaryButton" type="submit" disabled={isPending}>
+          {isPending ? "Saving..." : "Complete Registration"}
+        </button>
       </div>
     </form>
   );
