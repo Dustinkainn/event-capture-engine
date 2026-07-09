@@ -19,6 +19,8 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
           attendees: {
             orderBy: [{ lastName: "asc" }, { firstName: "asc" }]
           },
+          qrTokens: true,
+          checkIns: true,
           answers: {
             include: {
               question: true,
@@ -42,6 +44,10 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
     (registration) => registration.status === "submitted" || registration.status === "incomplete"
   ).length;
   const attendeeCount = event.registrations.reduce((total, registration) => total + registration.attendees.length, 0);
+  const checkedInCount = event.registrations.reduce(
+    (total, registration) => total + registration.attendees.filter((attendee) => attendee.checkInStatus === "checked_in").length,
+    0
+  );
 
   return (
     <main className="pageShell">
@@ -88,6 +94,11 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
             <strong>{attendeeCount}</strong>
             <small>Across all registrations</small>
           </article>
+          <article className="metric">
+            <span>Checked In</span>
+            <strong>{checkedInCount}</strong>
+            <small>Current event-day progress</small>
+          </article>
         </div>
       </section>
 
@@ -108,33 +119,70 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
               const markComplete = updateRegistrationStatus.bind(null, event.id, registration.id, "complete");
               const markSubmitted = updateRegistrationStatus.bind(null, event.id, registration.id, "submitted");
               const cancelRegistration = updateRegistrationStatus.bind(null, event.id, registration.id, "canceled");
+              const attendeeTotal = registration.attendees.length;
+              const checkedInTotal = registration.attendees.filter((attendee) => attendee.checkInStatus === "checked_in").length;
+              const readyToken = registration.qrTokens.find((token) => token.status === "unused");
+              const usedToken = registration.qrTokens.find((token) => token.status === "used");
+              const isCheckInReady = registration.status === "complete" && Boolean(readyToken);
+              const latestCheckIn = registration.checkIns
+                .filter((checkIn) => checkIn.action === "check_in")
+                .sort((a, b) => b.checkedInAt.getTime() - a.checkedInAt.getTime())[0];
 
               return (
                 <details className="reviewItem" key={registration.id}>
                   <summary>
-                    <span>
+                    <span className="reviewSummaryMain">
                       <strong>{registration.primaryFirstName} {registration.primaryLastName}</strong>
-                      <small>{registration.primaryEmail ?? "No email"} | {registration.attendees.length} attendees</small>
+                      <small>{registration.primaryEmail ?? "No email"} | {attendeeTotal} {attendeeTotal === 1 ? "attendee" : "attendees"}</small>
                     </span>
-                    <em>{formatStatus(registration.status)}</em>
+                    <span className="reviewSummaryBadges">
+                      <em>{formatStatus(registration.status)}</em>
+                      <small>{checkedInTotal}/{attendeeTotal} checked in</small>
+                    </span>
                   </summary>
 
                   <div className="reviewBody">
+                    <div className="registrationOverview">
+                      <div>
+                        <span>Contact</span>
+                        <strong>{registration.primaryEmail ?? "No email"}</strong>
+                        <small>{registration.primaryPhone ?? "No phone"}</small>
+                      </div>
+                      <div>
+                        <span>Group Size</span>
+                        <strong>{attendeeTotal}</strong>
+                        <small>{checkedInTotal} checked in</small>
+                      </div>
+                      <div>
+                        <span>QR Status</span>
+                        <strong>{isCheckInReady ? "Ready" : usedToken ? "Used" : "Not ready"}</strong>
+                        <small>{readyToken ? "Group QR available" : usedToken ? "QR already scanned" : "Needs review"}</small>
+                      </div>
+                      <div>
+                        <span>Payment</span>
+                        <strong>{formatStatus(registration.paymentStatus)}</strong>
+                        <small>{registration.status === "complete" ? "Registration complete" : "Review before check-in"}</small>
+                      </div>
+                    </div>
+
                     <div className="reviewMeta">
-                      <div><strong>Payment</strong><span>{formatStatus(registration.paymentStatus)}</span></div>
                       <div><strong>Submitted</strong><span>{registration.submittedAt ? formatEventDateTime(registration.submittedAt) : "Not submitted"}</span></div>
-                      <div><strong>Phone</strong><span>{registration.primaryPhone ?? "No phone"}</span></div>
+                      <div><strong>Last check-in</strong><span>{latestCheckIn ? formatEventDateTime(latestCheckIn.checkedInAt) : "No check-ins yet"}</span></div>
+                      <div><strong>Sync ready</strong><span>{registration.status === "complete" ? "Yes" : "No"}</span></div>
                     </div>
 
                     <div className="reviewColumns">
                       <section>
                         <h3>Attendees</h3>
-                        <div className="accessList">
+                        <div className="attendeeReviewList">
                           {registration.attendees.map((attendee) => (
-                            <div className="accessRow" key={attendee.id}>
-                              <strong>{attendee.firstName} {attendee.lastName ?? ""}</strong>
-                              <span>{formatStatus(attendee.status)} | {formatStatus(attendee.checkInStatus)}</span>
-                            </div>
+                            <article className="attendeeReviewRow" key={attendee.id}>
+                              <div>
+                                <strong>{attendee.firstName} {attendee.lastName ?? ""}</strong>
+                                <span>{attendee.email ?? "No email"}</span>
+                              </div>
+                              <small>{formatStatus(attendee.checkInStatus)}</small>
+                            </article>
                           ))}
                         </div>
                       </section>
@@ -159,10 +207,10 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
 
                     <div className="formActions">
                       <form action={markSubmitted}>
-                        <button className="secondaryButton" type="submit">Mark Submitted</button>
+                        <button className="secondaryButton" type="submit">Needs Review</button>
                       </form>
                       <form action={markComplete}>
-                        <button className="primaryButton" type="submit">Mark Complete</button>
+                        <button className="primaryButton" type="submit">Approve for Check-In</button>
                       </form>
                       <form action={cancelRegistration}>
                         <button className="textButton dangerText" type="submit">Cancel</button>

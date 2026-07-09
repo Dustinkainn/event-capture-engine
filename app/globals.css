@@ -542,13 +542,13 @@ h2 {
 
 .registrationReviewList {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .reviewItem {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--field);
+  background: #ffffff;
   overflow: hidden;
 }
 
@@ -557,7 +557,7 @@ h2 {
   justify-content: space-between;
   gap: 16px;
   align-items: center;
-  padding: 14px;
+  padding: 16px;
   cursor: pointer;
   list-style: none;
 }
@@ -576,18 +576,57 @@ h2 {
 }
 
 .reviewItem summary em {
-  flex: 0 0 auto;
   color: var(--action);
   font-style: normal;
   font-weight: 700;
 }
 
+.reviewSummaryMain,
+.reviewSummaryBadges {
+  display: grid;
+  gap: 4px;
+}
+
+.reviewSummaryBadges {
+  justify-items: end;
+  text-align: right;
+}
+
 .reviewBody {
   display: grid;
   gap: 16px;
-  padding: 14px;
+  padding: 16px;
   border-top: 1px solid var(--line);
   background: #ffffff;
+}
+
+.registrationOverview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.registrationOverview div {
+  padding: 12px;
+  border-left: 4px solid var(--info);
+  background: var(--field);
+}
+
+.registrationOverview span,
+.registrationOverview small,
+.attendeeReviewRow span,
+.attendeeReviewRow small {
+  color: var(--muted);
+}
+
+.registrationOverview span,
+.registrationOverview strong,
+.registrationOverview small {
+  display: block;
+}
+
+.registrationOverview strong {
+  margin-top: 4px;
 }
 
 .reviewMeta,
@@ -609,6 +648,33 @@ h2 {
 
 .reviewColumns h3 {
   margin: 0 0 10px;
+}
+
+.attendeeReviewList {
+  display: grid;
+  gap: 8px;
+}
+
+.attendeeReviewRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+.attendeeReviewRow strong,
+.attendeeReviewRow span {
+  display: block;
+}
+
+.attendeeReviewRow small {
+  flex: 0 0 auto;
+  font-weight: 700;
+  text-align: right;
 }
 
 .syncSnapshot {
@@ -1363,6 +1429,7 @@ button:disabled {
   .introCard,
   .reviewMeta,
   .reviewColumns,
+  .registrationOverview,
   .confirmationGrid,
   .scannerLayout {
     grid-template-columns: 1fr;
@@ -1458,9 +1525,28 @@ button:disabled {
   .detailList div,
   .mappingRow,
   .lookupRow,
+  .reviewItem summary,
   .formStep,
   .formSection {
     grid-template-columns: 1fr;
+  }
+
+  .reviewItem summary {
+    display: grid;
+    align-items: start;
+  }
+
+  .reviewSummaryBadges {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .attendeeReviewRow {
+    display: grid;
+  }
+
+  .attendeeReviewRow small {
+    text-align: left;
   }
 
   .formActions {
