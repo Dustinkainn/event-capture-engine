@@ -506,6 +506,27 @@ h2 {
   line-height: 1.4;
 }
 
+.hubCard .regBadge {
+  display: inline-grid;
+  place-items: center;
+  min-height: 28px;
+  margin-top: 12px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hubCard .regBadge.open {
+  color: #1f5a46;
+  background: #e2f0ea;
+}
+
+.hubCard .regBadge.closed {
+  color: #7a3535;
+  background: #f6e4e4;
+}
+
 .hubActions {
   display: flex;
   flex-wrap: wrap;

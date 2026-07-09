@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { refreshEventCounts } from "../actions";
+import { refreshEventCounts, setRegistrationOpen } from "../actions";
 import { EventWorkspaceNav } from "./EventWorkspaceNav";
 import { AppTopbar } from "../../AppTopbar";
 
@@ -9,10 +9,12 @@ export const dynamic = "force-dynamic";
 
 type EventDetailPageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ registration?: string }>;
 };
 
-export default async function EventDetailPage({ params }: EventDetailPageProps) {
+export default async function EventDetailPage({ params, searchParams }: EventDetailPageProps) {
   const { id } = await params;
+  const { registration } = await searchParams;
   const event = await prisma.event.findUnique({
     where: { id },
     include: {
@@ -72,11 +74,27 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   );
   const readySyncItems = event.syncQueueItems.filter((item) => item.status === "ready" || item.status === "queued");
   const refreshCounts = refreshEventCounts.bind(null, event.id);
+  const registrationOpen = event.status === "open";
+  const toggleRegistration = setRegistrationOpen.bind(null, event.id, !registrationOpen);
+  const toggleLabel = registrationOpen ? "Close Registration" : event.status === "closed" ? "Reopen Registration" : "Open Registration";
 
   return (
     <main className="pageShell">
       <AppTopbar active="events" eyebrow="Event Detail" title={event.name} />
       <EventWorkspaceNav active="overview" eventId={event.id} />
+
+      {registration ? (
+        <section className="section">
+          <article className={`noticePanel ${registration === "open" ? "ok" : "warn"}`}>
+            <strong>{registration === "open" ? "Registration reopened" : "Registration closed"}</strong>
+            <span>
+              {registration === "open"
+                ? "The public registration page is now accepting submissions."
+                : "The public registration page is no longer accepting submissions."}
+            </span>
+          </article>
+        </section>
+      ) : null}
 
       <section className="section">
         <div className="metricGrid">
@@ -122,8 +140,16 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               <p className="eyebrow">Registration</p>
               <h2>Registrations</h2>
               <span>{completeRegistrations.length} complete, {pendingRegistrations.length} need review</span>
+              <span className={`regBadge ${registrationOpen ? "open" : "closed"}`}>
+                {registrationOpen ? "Registration open" : "Registration closed"}
+              </span>
             </div>
             <div className="hubActions">
+              <form action={toggleRegistration}>
+                <button className={registrationOpen ? "secondaryButton" : "primaryButton"} type="submit">
+                  {toggleLabel}
+                </button>
+              </form>
               <a className="secondaryButton" href={`/register/${event.id}`}>Public Page</a>
               <a className="secondaryButton" href={`/events/${event.id}/registrations`}>Review</a>
             </div>

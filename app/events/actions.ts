@@ -91,6 +91,35 @@ export async function updateEvent(eventId: string, formData: FormData) {
   redirect(`/events/${eventId}`);
 }
 
+export async function setRegistrationOpen(eventId: string, open: boolean) {
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+
+  if (!event) {
+    throw new Error("Event could not be found.");
+  }
+
+  const now = new Date();
+  // When reopening, clear a stale window that would otherwise keep registration
+  // blocked (a close date already in the past, or an open date still in the future).
+  const clearStaleClose = open && event.registrationClosesAt !== null && event.registrationClosesAt < now;
+  const clearFutureOpen = open && event.registrationOpensAt !== null && event.registrationOpensAt > now;
+
+  await prisma.event.update({
+    where: { id: eventId },
+    data: {
+      status: open ? "open" : "closed",
+      registrationClosesAt: clearStaleClose ? null : event.registrationClosesAt,
+      registrationOpensAt: clearFutureOpen ? null : event.registrationOpensAt
+    }
+  });
+
+  revalidatePath("/");
+  revalidatePath("/events");
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath(`/register/${eventId}`);
+  redirect(`/events/${eventId}?registration=${open ? "open" : "closed"}`);
+}
+
 function getQuestionPayload(eventId: string, formData: FormData) {
   const label = getString(formData, "label");
 

@@ -22,7 +22,7 @@ export default async function RegistrationPage({ params }: RegistrationPageProps
     }
   });
 
-  if (!event || event.status !== "open" || event.visibility !== "public") {
+  if (!event || event.visibility !== "public" || event.status === "draft" || event.status === "archived") {
     notFound();
   }
 
@@ -31,16 +31,19 @@ export default async function RegistrationPage({ params }: RegistrationPageProps
   const remaining = event.capacity !== null ? Math.max(event.capacity - activeAttendees, 0) : null;
 
   const now = new Date();
+  const closedByStatus = event.status !== "open";
   const notYetOpen = Boolean(event.registrationOpensAt && now < event.registrationOpensAt);
-  const closed = Boolean(event.registrationClosesAt && now > event.registrationClosesAt);
+  const windowClosed = Boolean(event.registrationClosesAt && now > event.registrationClosesAt);
   const isFull = remaining !== null && remaining <= 0;
-  const unavailableReason = notYetOpen
-    ? `Registration opens ${formatEventDateTime(event.registrationOpensAt as Date)}.`
-    : closed
-      ? "Registration for this event has closed."
-      : isFull
-        ? "This event is full. No spots remain."
-        : null;
+  const unavailableReason = closedByStatus
+    ? "Registration for this event is closed."
+    : notYetOpen
+      ? `Registration opens ${formatEventDateTime(event.registrationOpensAt as Date)}.`
+      : windowClosed
+        ? "Registration for this event has closed."
+        : isFull
+          ? "This event is full. No spots remain."
+          : null;
 
   return (
     <main className="publicShell">
