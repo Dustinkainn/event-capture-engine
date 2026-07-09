@@ -24,6 +24,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
 
   const token = registration.qrTokens[0];
   const qrImage = token ? await QRCode.toDataURL(token.tokenHash, { margin: 1, width: 280 }) : null;
+  const isReadyForCheckIn = token?.status === "unused";
 
   return (
     <main className="publicShell">
@@ -37,23 +38,57 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
 
       <section className="publicContent">
         <article className="publicCard confirmationCard">
-          <span className="statusPill">Confirmed</span>
-          <h2>{registration.primaryFirstName}, your registration is saved.</h2>
-          <p>Your event record is ready for check-in. Show this QR code at the event entrance.</p>
-          {qrImage ? (
-            <div className="qrCard">
-              <img alt="Registration QR code" src={qrImage} />
-              <span>Check-in QR code</span>
+          <div className="confirmationHeader">
+            <div>
+              <span className="statusPill">{isReadyForCheckIn ? "Ready for check-in" : "Checked in"}</span>
+              <h2>{registration.primaryFirstName}, your registration is saved.</h2>
+              <p>Keep this page handy. Your QR code connects this registration and all listed attendees at check-in.</p>
             </div>
-          ) : null}
-          <div className="detailList">
-            <div><dt>Registration</dt><dd>{registration.primaryFirstName} {registration.primaryLastName}</dd></div>
-            <div><dt>Attendees</dt><dd>{registration.attendees.map((attendee) => `${attendee.firstName} ${attendee.lastName ?? ""}`).join(", ")}</dd></div>
-            <div><dt>Access token</dt><dd>{registration.qrTokens[0]?.status === "unused" ? "Ready for check-in" : "Pending"}</dd></div>
           </div>
+
+          <div className="confirmationGrid">
+            <section className="qrPanel">
+              {qrImage ? (
+                <div className="qrCard">
+                  <img alt="Registration QR code" src={qrImage} />
+                  <span>Show this at check-in</span>
+                </div>
+              ) : (
+                <div className="qrFallback">
+                  <strong>QR code unavailable</strong>
+                  <span>Staff can still find this registration by name.</span>
+                </div>
+              )}
+              <div className="checkInInstructions">
+                <strong>At the event</strong>
+                <span>Have this QR code ready when you arrive. Staff can scan it once for the full registration.</span>
+              </div>
+            </section>
+
+            <section className="confirmationDetails">
+              <div className="detailList">
+                <div><dt>Registration</dt><dd>{registration.primaryFirstName} {registration.primaryLastName}</dd></div>
+                <div><dt>Email</dt><dd>{registration.primaryEmail ?? "Not provided"}</dd></div>
+                <div><dt>Status</dt><dd>{isReadyForCheckIn ? "Ready for check-in" : "Already used"}</dd></div>
+              </div>
+
+              <div className="attendeeSummary">
+                <h3>Attendees</h3>
+                <div>
+                  {registration.attendees.map((attendee, index) => (
+                    <article key={attendee.id}>
+                      <strong>{attendee.firstName} {attendee.lastName ?? ""}</strong>
+                      <span>Attendee {index + 1}</span>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </div>
+
           <div className="formActions">
             <a className="secondaryButton" href={`/register/${registration.eventId}`}>Register another attendee</a>
-            <a className="primaryButton" href={`/events/${registration.eventId}`}>Event Detail</a>
+            <a className="primaryButton" href={`/register/${registration.eventId}`}>Back to event</a>
           </div>
         </article>
       </section>

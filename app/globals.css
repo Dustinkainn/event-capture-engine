@@ -957,8 +957,38 @@ th {
 
 .confirmationCard {
   display: grid;
+  gap: 22px;
+  padding: 28px;
+}
+
+.confirmationHeader {
+  display: flex;
+  justify-content: space-between;
   gap: 18px;
-  padding: 26px;
+  align-items: flex-start;
+}
+
+.confirmationHeader h2 {
+  margin-top: 12px;
+}
+
+.confirmationHeader p {
+  max-width: 680px;
+  color: var(--muted);
+}
+
+.confirmationGrid {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.qrPanel,
+.confirmationDetails,
+.attendeeSummary {
+  display: grid;
+  gap: 14px;
 }
 
 .qrCard {
@@ -981,6 +1011,39 @@ th {
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
+}
+
+.qrFallback,
+.checkInInstructions,
+.attendeeSummary article {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+.qrFallback,
+.checkInInstructions {
+  display: grid;
+  gap: 4px;
+}
+
+.qrFallback span,
+.checkInInstructions span,
+.attendeeSummary span {
+  color: var(--muted);
+}
+
+.attendeeSummary > div {
+  display: grid;
+  gap: 8px;
+}
+
+.attendeeSummary article {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
 }
 
 .scannerShell {
@@ -1300,6 +1363,7 @@ button:disabled {
   .introCard,
   .reviewMeta,
   .reviewColumns,
+  .confirmationGrid,
   .scannerLayout {
     grid-template-columns: 1fr;
   }
@@ -1374,7 +1438,8 @@ button:disabled {
   }
 
   .stepHeader,
-  .attendeeEntryHeader {
+  .attendeeEntryHeader,
+  .confirmationHeader {
     display: grid;
   }
 
@@ -1414,6 +1479,18 @@ button:disabled {
 
   .attendeeEntry {
     padding: 14px;
+  }
+
+  .confirmationCard {
+    padding: 18px;
+  }
+
+  .qrCard {
+    width: 100%;
+  }
+
+  .attendeeSummary article {
+    display: grid;
   }
 
   .scannerActions,
