@@ -122,7 +122,7 @@ export default async function Home() {
           <article className="panel">
             <div className="panelHeading">
               <h2>Events</h2>
-              <button className="textButton" type="button">Export CSV</button>
+              <a className="textButton" href="/events">View All</a>
             </div>
             <div className="eventList">
               {events.map((event) => {
@@ -153,7 +153,6 @@ export default async function Home() {
           <article id="access" className="panel">
             <div className="panelHeading">
               <h2>Event Access</h2>
-              <button className="textButton" type="button">Manage</button>
             </div>
             <div className="accessList">
               {staffUsers.map((user) => (

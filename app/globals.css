@@ -333,6 +333,51 @@ h2 {
   color: var(--info);
 }
 
+.eventDirectoryRow {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) repeat(4, minmax(86px, 0.34fr)) minmax(280px, 0.75fr);
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+.eventDirectoryMain {
+  display: grid;
+  gap: 4px;
+}
+
+.eventDirectoryMain span,
+.eventDirectoryMain small,
+.eventDirectoryRow span {
+  color: var(--muted);
+}
+
+.eventDirectoryMain small,
+.eventDirectoryRow span {
+  font-size: 13px;
+}
+
+.eventDirectoryRow b,
+.eventDirectoryRow span {
+  display: block;
+}
+
+.eventLaunchActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.eventLaunchActions .primaryButton,
+.eventLaunchActions .secondaryButton {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
 .eventRow span,
 .accessRow span,
 .syncRows span {
@@ -1477,6 +1522,7 @@ button:disabled {
   .reviewMeta,
   .reviewColumns,
   .registrationOverview,
+  .eventDirectoryRow,
   .confirmationGrid,
   .scannerLayout {
     grid-template-columns: 1fr;
@@ -1628,6 +1674,7 @@ button:disabled {
   }
 
   .scannerActions,
+  .eventLaunchActions,
   .cameraControls,
   .tokenEntry div,
   .compactScannerPanel .scannerTotals {
