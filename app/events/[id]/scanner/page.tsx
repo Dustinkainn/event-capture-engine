@@ -3,6 +3,7 @@ import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { checkInAttendee, checkInToken, undoLatestCheckIn } from "./actions";
 import { QrCameraScanner } from "./QrCameraScanner";
+import { EventWorkspaceNav } from "../EventWorkspaceNav";
 
 export const dynamic = "force-dynamic";
 
@@ -100,10 +101,10 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
           <span>{formatEventDateTime(event.startsAt)}{event.locationName ? ` | ${event.locationName}` : ""}</span>
         </div>
         <div className="actions">
-          <a className="secondaryButton" href={`/events/${event.id}`}>Event Detail</a>
           <a className="secondaryButton" href="/events">Events</a>
         </div>
       </header>
+      <EventWorkspaceNav active="check-in" eventId={event.id} />
 
       <section className="scannerLayout">
         <article className="scanStage">

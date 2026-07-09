@@ -121,6 +121,35 @@ a {
   position: static;
 }
 
+.eventWorkspaceNav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 32px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.96);
+  overflow-x: auto;
+}
+
+.eventWorkspaceNav a {
+  display: inline-grid;
+  place-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.eventWorkspaceNav a:hover,
+.eventWorkspaceNav a.active {
+  color: #ffffff;
+  background: var(--info);
+}
+
 .eyebrow {
   margin: 0 0 4px;
   color: var(--muted);
@@ -1118,6 +1147,21 @@ th {
   background: #0f1922;
 }
 
+.scannerShell .eventWorkspaceNav {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  background: #111b24;
+}
+
+.scannerShell .eventWorkspaceNav a {
+  color: #b7c3cf;
+}
+
+.scannerShell .eventWorkspaceNav a:hover,
+.scannerShell .eventWorkspaceNav a.active {
+  color: #ffffff;
+  background: #2f6f9f;
+}
+
 .scannerHeader {
   display: flex;
   justify-content: space-between;
@@ -1145,7 +1189,10 @@ th {
 .scanStage {
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 16px;
   min-height: calc(100vh - 140px);
+  padding: 18px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   background: #1d2a35;
@@ -1461,7 +1508,8 @@ button:disabled {
   .topbar,
   .section,
   .publicHero,
-  .scannerHeader {
+  .scannerHeader,
+  .eventWorkspaceNav {
     padding-left: 18px;
     padding-right: 18px;
   }

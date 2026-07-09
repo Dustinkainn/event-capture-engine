@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { updateRegistrationStatus } from "../../actions";
+import { EventWorkspaceNav } from "../EventWorkspaceNav";
 
 type RegistrationReviewPageProps = {
   params: Promise<{ id: string }>;
@@ -57,11 +58,11 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
           <h1>{event.name}</h1>
         </div>
         <div className="actions">
-          <a className="secondaryButton" href={`/events/${event.id}`}>Event Detail</a>
-          <a className="secondaryButton" href={`/events/${event.id}/counts`}>Counts</a>
-          <a className="secondaryButton" href={`/events/${event.id}/scanner`}>Check-In Scanner</a>
+          <a className="secondaryButton" href={`/register/${event.id}`}>Public Page</a>
+          <a className="secondaryButton" href="/events">Events</a>
         </div>
       </header>
+      <EventWorkspaceNav active="registrations" eventId={event.id} />
 
       {updated ? (
         <section className="section">

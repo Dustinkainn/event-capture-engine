@@ -10,6 +10,7 @@ import {
   updateCountCategory
 } from "../../actions";
 import { CountCategoryForm } from "./CountCategoryForm";
+import { EventWorkspaceNav } from "../EventWorkspaceNav";
 
 type CountBuilderPageProps = {
   params: Promise<{ id: string }>;
@@ -82,11 +83,10 @@ export default async function CountBuilderPage({ params, searchParams }: CountBu
           <form action={refreshCounts}>
             <button className="primaryButton" type="submit">Refresh Counts</button>
           </form>
-          <a className="secondaryButton" href={`/events/${event.id}`}>Event Detail</a>
-          <a className="secondaryButton" href={`/events/${event.id}/form`}>Form Builder</a>
           <a className="secondaryButton" href="/events">Events</a>
         </div>
       </header>
+      <EventWorkspaceNav active="counts" eventId={event.id} />
 
       {counts === "refreshed" ? (
         <section className="section">

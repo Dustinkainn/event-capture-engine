@@ -3,6 +3,7 @@ import { formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { createQuestion, deleteQuestion, updateQuestion } from "../../actions";
 import { QuestionForm } from "./QuestionForm";
+import { EventWorkspaceNav } from "../EventWorkspaceNav";
 
 type FormBuilderPageProps = {
   params: Promise<{ id: string }>;
@@ -34,11 +35,10 @@ export default async function FormBuilderPage({ params }: FormBuilderPageProps) 
           <h1>{event.name}</h1>
         </div>
         <div className="actions">
-          <a className="secondaryButton" href={`/events/${event.id}`}>Event Detail</a>
-          <a className="secondaryButton" href={`/events/${event.id}/edit`}>Edit Event</a>
           <a className="secondaryButton" href="/events">Events</a>
         </div>
       </header>
+      <EventWorkspaceNav active="form" eventId={event.id} />
 
       <section className="section editorLayout">
         <article className="panel">

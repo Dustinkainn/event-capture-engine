@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { updateSyncStatus } from "../../actions";
+import { EventWorkspaceNav } from "../EventWorkspaceNav";
 
 type SyncReviewPageProps = {
   params: Promise<{ id: string }>;
@@ -36,11 +37,10 @@ export default async function SyncReviewPage({ params, searchParams }: SyncRevie
           <h1>{event.name}</h1>
         </div>
         <div className="actions">
-          <a className="secondaryButton" href={`/events/${event.id}`}>Event Detail</a>
-          <a className="secondaryButton" href={`/events/${event.id}/registrations`}>Registrations</a>
           <a className="secondaryButton" href="/events">Events</a>
         </div>
       </header>
+      <EventWorkspaceNav active="sync" eventId={event.id} />
 
       {updated ? (
         <section className="section">

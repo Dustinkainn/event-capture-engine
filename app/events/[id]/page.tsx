@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { refreshEventCounts } from "../actions";
+import { EventWorkspaceNav } from "./EventWorkspaceNav";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +84,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <a className="secondaryButton" href="/">Dashboard</a>
         </div>
       </header>
+      <EventWorkspaceNav active="overview" eventId={event.id} />
 
       <section className="section">
         <div className="metricGrid">
@@ -123,7 +125,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <article className="hubCard">
             <div>
               <p className="eyebrow">Registration</p>
-              <h2>Guest Records</h2>
+              <h2>Registrations</h2>
               <span>{completeRegistrations.length} complete, {pendingRegistrations.length} need review</span>
             </div>
             <div className="hubActions">
