@@ -1,6 +1,6 @@
 type EventWorkspaceNavProps = {
   eventId: string;
-  active: "overview" | "details" | "form" | "counts" | "registrations" | "check-in" | "check-in-log" | "sync";
+  active: "overview" | "details" | "form" | "registrations" | "attendees" | "counts" | "check-in" | "check-in-log" | "sync";
 };
 
 const workspaceLinks = [
@@ -8,6 +8,7 @@ const workspaceLinks = [
   { key: "details", label: "Event Details", href: (eventId: string) => `/events/${eventId}/edit` },
   { key: "form", label: "Form Builder", href: (eventId: string) => `/events/${eventId}/form` },
   { key: "registrations", label: "Registrations", href: (eventId: string) => `/events/${eventId}/registrations` },
+  { key: "attendees", label: "Attendees", href: (eventId: string) => `/events/${eventId}/attendees` },
   { key: "counts", label: "Counts", href: (eventId: string) => `/events/${eventId}/counts` },
   { key: "check-in", label: "Check-In", href: (eventId: string) => `/events/${eventId}/scanner` },
   { key: "check-in-log", label: "Check-In Log", href: (eventId: string) => `/events/${eventId}/checkins` },

@@ -1563,6 +1563,30 @@ th {
   margin-top: 12px;
 }
 
+.lookupEmpty {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  background: var(--field);
+}
+
+.lookupEmpty span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.attendeeSearch .lookupInput {
+  margin-bottom: 4px;
+}
+
+.searchMeta {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .lookupRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

@@ -57,7 +57,12 @@ export default async function RegistrationReviewPage({ params, searchParams }: R
         active="events"
         eyebrow="Registration Review"
         title={event.name}
-        actions={<a className="secondaryButton" href={`/register/${event.id}`}>Public Page</a>}
+        actions={
+          <>
+            <a className="secondaryButton" href={`/events/${event.id}/registrations/export`}>Export CSV</a>
+            <a className="secondaryButton" href={`/register/${event.id}`}>Public Page</a>
+          </>
+        }
       />
       <EventWorkspaceNav active="registrations" eventId={event.id} />
 

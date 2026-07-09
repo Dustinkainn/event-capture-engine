@@ -3,6 +3,7 @@ import { formatEventDateTime, formatStatus } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { checkInAttendee, checkInToken, getActiveStationId, selectStation, undoLatestCheckIn } from "./actions";
 import { QrCameraScanner } from "./QrCameraScanner";
+import { ManualLookup, type LookupAttendee } from "./ManualLookup";
 import { EventWorkspaceNav } from "../EventWorkspaceNav";
 import { AppTopbar } from "../../../AppTopbar";
 
@@ -93,7 +94,17 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
   const duplicateScans = event.checkIns.filter((checkIn) => checkIn.action === "undo").length;
   const activeStations = event.devices.filter((device) => device.lastSeenAt).length;
   const latestScan = event.checkIns[0];
-  const lookupResults = event.attendees.slice(0, 4);
+  const lookupAttendees: LookupAttendee[] = event.attendees.map((attendee) => ({
+    id: attendee.id,
+    firstName: attendee.firstName,
+    lastName: attendee.lastName,
+    registrantName: `${attendee.registration.primaryFirstName} ${attendee.registration.primaryLastName}`,
+    email: attendee.email,
+    phone: attendee.phone,
+    checkInStatusLabel: formatStatus(attendee.checkInStatus),
+    isReady: attendee.status === "active" && attendee.registration.status === "complete",
+    isCheckedIn: attendee.checkInStatus === "checked_in"
+  }));
   const resultMessage = result ? resultMessages[result] : null;
   const undoCheckIn = undoLatestCheckIn.bind(null, event.id);
   const scanToken = checkInToken.bind(null, event.id);
@@ -201,8 +212,6 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
               </div>
             )}
             <div className="scannerActions">
-              <button className="primaryButton" type="button">Check In Group</button>
-              <button className="secondaryButton" type="button">Choose Individuals</button>
               <form action={undoCheckIn}>
                 <button className="secondaryButton" type="submit">Undo Last Check-In</button>
               </form>
@@ -211,28 +220,7 @@ export default async function ScannerPage({ params, searchParams }: ScannerPageP
 
           <article className="scannerPanel">
             <h2>Manual Lookup</h2>
-            <input className="lookupInput" aria-label="Search attendee or group" placeholder="Name, email, phone, or QR code" />
-            <div className="lookupList">
-              {lookupResults.map((attendee) => {
-                const checkIn = checkInAttendee.bind(null, event.id, attendee.id);
-                const isReady = attendee.status === "active" && attendee.registration.status === "complete";
-                const isCheckedIn = attendee.checkInStatus === "checked_in";
-
-                return (
-                  <div className="lookupRow" key={attendee.id}>
-                    <div>
-                      <strong>{attendee.firstName} {attendee.lastName ?? ""}</strong>
-                      <span>{attendee.registration.primaryFirstName} {attendee.registration.primaryLastName} | {formatStatus(attendee.checkInStatus)}</span>
-                    </div>
-                    <form action={checkIn}>
-                      <button className={isCheckedIn ? "secondaryButton" : "primaryButton"} type="submit" disabled={!isReady || isCheckedIn}>
-                        {isCheckedIn ? "Checked In" : isReady ? "Check In" : "Review"}
-                      </button>
-                    </form>
-                  </div>
-                );
-              })}
-            </div>
+            <ManualLookup attendees={lookupAttendees} checkInAction={checkInAttendee} eventId={event.id} />
           </article>
 
           <article className="scannerPanel compactScannerPanel">
