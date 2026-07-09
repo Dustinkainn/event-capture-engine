@@ -1,5 +1,15 @@
 # Phase 2 Plan - Check-In
 
+## Status (updated 2026-07-09)
+
+Phase 2 is complete for its stated goal.
+
+- Slice 1 (confirmation delivery): done, but deliberately without email. See the decision note under the slice below.
+- Slice 2 (check-in log): done.
+- Slice 3 (attendance counts): done.
+- Slice 4 (station identity): done.
+- Slice 5 (scanner hardening): done; offline scanning formally deferred to its own later phase.
+
 ## Goal
 
 Phase 2 proves the event-day workflow works reliably. Phase 1 proved we can capture clean event data and turn it into exact counts. Phase 2 proves that on the day of the event, staff can get a registrant from "arrived at the door" to "counted as present" quickly, accurately, and without double-counting.
@@ -40,8 +50,11 @@ Email carries an inline QR image and long links cleanly, needs no phone-number n
 Why this is Slice 1:
 Every later check-in improvement assumes registrants can present something to scan. Delivery is the true entry point of the event-day workflow, so it comes before polishing the scanner or the reports.
 
-Decision needed before building:
-This slice introduces the first outbound integration. We need to pick an email provider and a from-address, and store its credentials in environment config. This is flagged as an open decision below rather than assumed.
+Decision made (2026-07-09): no third-party service.
+Rather than send email through an outside provider, we made confirmation self-serve. The confirmation page now lets the registrant keep their own QR: Download QR (PNG), Print (a clean print stylesheet hides the app chrome and prints the QR with the registrant name and event details), and Copy link (the confirmation URL is stable and can be bookmarked). Manual name lookup at check-in remains the guaranteed fallback for anyone who arrives without their code.
+
+Why this instead of email:
+The goal of the slice is that people arrive able to be checked in, not that we operate a mail server. Self-serve reaches that goal with zero third-party services, zero credentials, and nothing to leak. Push delivery (email or SMS) can be added later if there is ever a reason to, but nothing is blocked on it now.
 
 ### Slice 2: Check-In Log and Attendance Review
 
@@ -84,14 +97,23 @@ A first real event can run from one station. Adding station identity before the 
 
 ### Slice 5: Scanner Reliability Hardening
 
-Build:
+Done (2026-07-09):
 
-- Physical-device camera test on a phone or tablet (carried over from Phase 1; the desktop session has no camera, and local HTTPS was not accepted by the test phone).
-- Decide whether a short-lived public HTTPS tunnel is acceptable for on-device testing, or whether we test another way.
-- Evaluate offline/degraded-network behavior for the scanner and decide if an offline queue is in Phase 2 or deferred.
+- Double-scan protection: a scan lock guarantees one QR read cannot submit twice even if the camera library fires the decode callback repeatedly.
+- Continuous scanning: after a successful scan the camera auto-resumes on the next page load (tracked with a per-event session flag), so staff can scan person after person without pressing Start each time. Pressing Stop ends the session and clears the flag.
+- Clearer states: an explicit "Scanning" state while the camera is live, and the existing readiness diagnostics (secure-context, browser support, permission, camera count) on failure.
 
-Why reliability is its own slice, and why offline is a maybe:
-Offline scanning is a large engineering slice with its own correctness risks (queued check-ins, later reconciliation, duplicate protection while disconnected). Phase 1 deliberately kept the scanner online-only. Phase 2 should decide with real event conditions in mind, not build offline speculatively.
+Offline scanning: deferred to its own later phase.
+Offline is a large engineering slice with its own correctness risks (queued check-ins, later reconciliation, duplicate protection while disconnected). We are keeping the scanner online-only for now and will revisit with real event conditions rather than build offline speculatively.
+
+Physical-device camera test (manual, still open):
+The camera code paths are proven at the build and mount level, but a live camera scan still needs to be run on a real phone or tablet. The desktop dev session has no camera. To test on a device:
+
+1. Run the app so the device can reach it over HTTPS (a camera needs a secure context). Options: a short-lived public HTTPS tunnel to the dev server, or the app deployed to a real HTTPS host. A phone will reject the local self-signed certificate, which is why the earlier local-HTTPS attempt did not load.
+2. Open the event scanner on the device and press Start Camera; allow the permission prompt.
+3. Register a test attendee, open that confirmation, and scan its QR from the scanner device.
+4. Confirm the attendee checks in, the totals update, the check-in log shows the scan (with the station if one is set), and the camera auto-resumes for the next scan.
+5. Note any mobile layout or ergonomics issues while scanning in event-day conditions.
 
 ## Carryover From Phase 1
 
@@ -114,8 +136,11 @@ Each non-goal is something that, if pulled into Phase 2, would delay proving the
 
 Start with Slice 1, Confirmation Delivery, because it is the true front door of the event-day workflow and everything else assumes it. Before writing code, settle the one open decision it depends on.
 
-## Open Decisions
+## Decisions Made
 
-1. Email provider and from-address for confirmation delivery, and where its credentials live in environment config.
-2. Whether a temporary public HTTPS tunnel is acceptable for on-device camera testing.
-3. Whether offline scanner support is in Phase 2 scope or deferred to a later phase.
+1. Confirmation delivery uses no third-party service. It is self-serve on the confirmation page (download, print, copy link) with manual lookup as the fallback. Push email/SMS is left for later and blocks nothing.
+2. Offline scanner support is deferred to its own later phase; the scanner stays online-only for now.
+
+## Still Open
+
+1. Running the physical-device camera test needs the app reachable over real HTTPS from a phone or tablet (a tunnel or a deployment). This is a manual test step, not a build task.
